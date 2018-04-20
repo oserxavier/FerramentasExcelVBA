@@ -1,0 +1,15 @@
+' Essa programação exclui um determinado número de linhas de acordo com um críterio, utilizando auto-filtro, dessa forma é bem mais rápido que o outro metodo que exclui linha a linha. 
+
+Sub ExcluiOutRegionais()
+    Application.DisplayAlerts = False
+    Range("a1").AutoFilter Field:=2, Criteria1:=Array( _
+        "CONNE", "NEGOCIOS EMP E PME", "OPERADORAS", "SP"), Operator:=xlFilterValues
+    
+    'exclude 1st row (titles)
+    With Intersect(Range("a1").CurrentRegion, _
+                   Range("2:1048576")).SpecialCells(xlCellTypeVisible)
+        .Rows.Delete
+    End With
+    ActiveSheet.ShowAllData
+Call ExcluiUNS
+End Sub
