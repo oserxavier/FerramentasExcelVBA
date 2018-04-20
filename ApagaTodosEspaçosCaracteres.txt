@@ -1,0 +1,31 @@
+' Essa programação foi adptada de uma programação, apaga todos os espaços 
+' duplos, triplos, ou qualquer espaço entre os caracteres
+
+Sub RetiraTdosEspacos()
+Dim cleanStr As String
+Dim dirtyString As String
+Dim fimline As Integer
+Dim i As Integer
+
+fimline = Cells(Rows.Count, 1).End(xlUp).Row
+For i = 2 To fimline
+If Cells(i, 1).Value <> "" Then
+
+    dirtyString = Cells(i, 1).Value
+ '   Debug.Print cleanStr(dirtyString)
+
+    If oRegex Is Nothing Then Set oRegex = CreateObject("vbscript.regexp")
+    With oRegex
+        .Global = True
+        'Allow A-Z, a-z, 0-9, a space and a hyphen -
+        .Pattern = "[^A-Za-z0-9 -]"
+        cleanStr = .Replace(dirtyString, vbNullString)
+    End With
+    cleanStr = WorksheetFunction.Trim(cleanStr)
+    Cells(i, 2).Value = cleanStr
+    Else
+    End If
+
+Next
+i = i + i
+End Sub
