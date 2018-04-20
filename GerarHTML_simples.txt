@@ -1,0 +1,28 @@
+Sub Salvar_html_Click()
+
+' Esse modelo gera HTML de forma bem simples, é necessário alterar o caminho
+
+Dim NomeArquivo, Rng, Titulo As String
+
+' Nome da aba, nesse caso aqui chama-se "Site", modificar na planilha
+Sheets("Site").Activate
+
+' Seleção das celulas na planilha
+Range("A5:Q100").Select
+
+' Caminho que ele vai salvar, sempre com o nome Frequencia.htm
+NomeArquivo = "D:\User\oxavier\Desktop\Frequencia.htm"
+
+' Rng determina as celulas que irão aparecer no Html
+Rng = "$A$5:$Q$100"
+'Titulo = "Frequência por dia do mês"
+
+ActiveWorkbook.PublishObjects.Add( _
+SourceType:=xlSourceRange, _
+Filename:=NomeArquivo, _
+Sheet:="Site", _
+Source:=Rng, _
+HtmlType:=xlHtmlStatic, _
+Title:=Titulo).Publish True
+
+End Sub
