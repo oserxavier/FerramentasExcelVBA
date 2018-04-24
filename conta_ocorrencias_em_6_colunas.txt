@@ -1,0 +1,41 @@
+' Conta as ocorrências nas colunas A, B, C, D, E e F - 6 COLUNAS
+' Para entendimento dessa programação disponha os dados nessa forma abaixo:
+
+'A1     B1      C1      D1      E1      F1
+'---------------------------------------------
+'Dt	Sb1	Sb2	Sb3	Sb4	Sb5
+'Am	ENC	HIC	POS	ECO	CPU
+'Am	ENC	HIC	POS	MAS	MAT
+'Bw	ENC	HIC	POS	ECO	CPU
+'Bw	ENC	HOS	PHE	CHE	BIO
+'Jn	ENC	HIC	POS	ECO	CPU
+'Jn	ENC	HIC	POS	ECO	CPU
+'Jn	ENC	HIC	MAT	OSH	OSE
+
+Sub contaOcorrencias_em_6_colunas()
+Dim Ray As Variant, Rw As Long, Ac As Long, n As Long, Dic As Object, Q As Variant
+Ray = Range("a1").CurrentRegion.Resize(, 6)
+ReDim nray(1 To UBound(Ray, 1) * UBound(Ray, 2), 1 To 3)
+nray(1, 1) = "Dt": nray(1, 2) = "Sb": nray(1, 3) = "Cnt"
+Set Dic = CreateObject("scripting.dictionary")
+Dic.CompareMode = vbTextCompare
+n = 1
+
+
+For Rw = 2 To UBound(Ray, 1)
+    For Ac = 2 To UBound(Ray, 2)
+        If Not Dic.Exists(Ray(Rw, 1) & Ray(Rw, Ac)) Then
+            n = n + 1
+            nray(n, 1) = Ray(Rw, 1): nray(n, 2) = Ray(Rw, Ac): nray(n, 3) = 1
+            Dic.Add Ray(Rw, 1) & Ray(Rw, Ac), Array(n, 1)
+        Else
+            Q = Dic(Ray(Rw, 1) & Ray(Rw, Ac))
+                Q(1) = Q(1) + 1
+                nray(Q(0), 3) = Q(1)
+           Dic(Ray(Rw, 1) & Ray(Rw, Ac)) = Q
+        
+        End If
+    Next Ac
+Next Rw
+Range("H1").Resize(n, 3) = nray
+End Sub
