@@ -1,0 +1,20 @@
+
+' Copia o conteudo da planilha, mesmo os graficos e cola no e-mail. 
+' Muito Bom!!!!!!!
+
+Sub Enviar_dados_celulas_email()
+' selecão da planilha desejada.
+  ActiveSheet.Select
+  Cells.Select
+      
+   ' como o envelope na ActiveWorkbook.
+   ActiveWorkbook.EnvelopeVisible = True
+   
+   With ActiveSheet.MailEnvelope
+      .Introduction = "Senhor Mário, veja abaixo detalhes das horas semanais"
+      .Item.To = "nomedodestinatario@email.com.br"
+      .Item.Subject = "Testando horas de trabalho"
+      .Item.send
+   End With
+[D1].Select
+End Sub
