@@ -1,0 +1,17 @@
+Sub RetirarZero
+
+' Essa programação retira apenas os zeros contidos numa planilha ... muito bom! Já utilizei diversas vezes. 
+
+Dim mySheets, r As Range 
+mySheets = Array("ACC", "BUS", "CEO", "COM", "CSD", "DUN", "EDI", _ 
+"FAC", "FIN", "HAL", "HR", "IT", "PP", "SPS", "MVM", "DCA") 
+ 
+For i = 0 To UBound(mySheets) 
+    Set r = Sheets(mySheets(i)).Range("a119:a174") 
+    With r 
+        .Replace What:="0", Replacement:="", LookAt:=xlWhole, _ 
+        SearchOrder:=xlByRows, MatchCase:=False 
+    End With 
+Next
+
+End Sub 
