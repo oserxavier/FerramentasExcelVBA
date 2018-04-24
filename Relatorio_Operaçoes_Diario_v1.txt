@@ -5,14 +5,14 @@ Cells.Select
 
 On Error Resume Next
 
-'Cria vari·veis objetos que acessar„o o Access e a Tabela:
+'Cria vari√°veis objetos que acessar√£o o Access e a Tabela:
 Dim cnConexao As New ADODB.Connection
 Dim rsTabela As New ADODB.Recordset
 Dim caminho As String
-'Instancia as vari·veis ("prepara" as vari·veis):
+'Instancia as vari√°veis ("prepara" as vari√°veis):
 Set cnConexao = New ADODB.Connection
 Set rsTabela = New ADODB.Recordset
-'Informa ‡ vari·vel o caminho do Banco de Dados (info na cÈlula J5):
+'Informa √† vari√°vel o caminho do Banco de Dados (info na c√©lula J5):
 caminho = "\\ntrjo100\stfrjo\Monitoramento AQR\base resumo reconline.mdb"
 Call cnConexao.Open("Provider=Microsoft.Jet.OLEDB.4.0;" & _
 "Data Source=" & caminho)
@@ -21,9 +21,9 @@ Call rsTabela.Open("Select * from CF_RJO_todos", cnConexao)
 'Faz loop para trazer os registros:
 Dim i As Integer
 i = 33
-'Configura os cabeÁalhos:
-ActiveSheet.Range("A32").Value = "N∞REC"
-ActiveSheet.Range("B32").Value = "N∞RAL"
+'Configura os cabe√ßalhos:
+ActiveSheet.Range("A32").Value = "N¬∞REC"
+ActiveSheet.Range("B32").Value = "N¬∞RAL"
 ActiveSheet.Range("C32").Value = "AQR"
 ActiveSheet.Range("D32").Value = "CLIENTE"
 ActiveSheet.Range("E32").Value = "DT.INIC."
@@ -37,7 +37,7 @@ ActiveSheet.Range("L32").Value = "EQUIPE"
 ActiveSheet.Range("M32").Value = "CF EXEC"
 ActiveSheet.Range("N32").Value = "CNL CF"
 ActiveSheet.Range("O32").Value = "UF CF"
-ActiveSheet.Range("P32").Value = "A«√O T…C"
+ActiveSheet.Range("P32").Value = "A√á√ÉO T√âC"
 ActiveSheet.Range("Q32").Value = "OBS ITEM"
 ActiveSheet.Range("R32").Value = "ATUAL."
 
@@ -64,11 +64,11 @@ ActiveSheet.Range("P" & i).Value = rsTabela("DESC_ACAO_TECNICA").Value
 ActiveSheet.Range("Q" & i).Value = rsTabela("OBS_ITEM").Value
 ActiveSheet.Range("R" & i).Value = rsTabela("DATA_ATUAL").Value
 
-    i = i + 1 'Incrementa a posiÁ„o da linha
-    rsTabela.MoveNext 'Move para o prÛximo registro na Tabela
+    i = i + 1 'Incrementa a posi√ß√£o da linha
+    rsTabela.MoveNext 'Move para o pr√≥ximo registro na Tabela
 Loop
 rsTabela.Close 'Fecha a tabela (aberta virtualmente)
-cnConexao.Close 'Fecha a conex„o com o Banco
+cnConexao.Close 'Fecha a conex√£o com o Banco
 'Altera a altura da coluna p/ 12,5
 
 ' Formato data
@@ -85,11 +85,11 @@ Range("F33").Resize(i, 1).FormulaLocal = "=($Y$1-E33)*1440"
 Columns("F:F").Select
     Selection.NumberFormat = "0"
     
-' Calcula o hor·rio para comparar com o condicional servidor
+' Calcula o hor√°rio para comparar com o condicional servidor
 Range("Y1").FormulaLocal = "=AGORA()"
 Range("Z1").FormulaLocal = "=(Y1-R33)*1440"
 
-' Calcula o hor·rio inicial e o hor·rio corrente
+' Calcula o hor√°rio inicial e o hor√°rio corrente
 Range("F33").Resize(i, 1).FormulaLocal = "=($Y$1-E33)*1440"
 
 ' Copia e transforma em valores
@@ -177,7 +177,7 @@ Call CondicionalServidor
 
 End Sub
 
-' Est· calculando a qte de caracteres no campo, mas est· sem utilidade
+' Est√° calculando a qte de caracteres no campo, mas est√° sem utilidade
 
 Private Sub TransCC()
     Dim Item As String
@@ -208,13 +208,13 @@ End Sub
 
 Private Sub CondicionalServidor()
 Dim temp As Long
-'A vari·vel "TempoMinuto" recebe o valor da coluna Q
+'A vari√°vel "TempoMinuto" recebe o valor da coluna Q
 temp = ActiveSheet.Range("z1").Value
 
-'Verifica se o servidor est· atualizado (considera 30 minutos de delay)
-'se È maior igual a 30 minutos
+'Verifica se o servidor est√° atualizado (considera 30 minutos de delay)
+'se √© maior igual a 30 minutos
     If (temp >= 30) Then
-        MsgBox "Fora do hor·rio padr„o, atualize o servidor!"
+        MsgBox "Fora do hor√°rio padr√£o, atualize o servidor!"
         ActiveSheet.Range("A1").Select
         Range("W1:Y1").Select
         Selection.ClearContents
@@ -470,7 +470,7 @@ End Sub
 
 Private Sub Evolucao()
 
-' Compara se a data do dia È diferente ou igual a data de baixo
+' Compara se a data do dia √© diferente ou igual a data de baixo
 Dim Dt As Date
 Range("r23") = Date
 Dt = Range("r23").Value
@@ -502,7 +502,7 @@ End Sub
 
 
 Sub Enviar_dados_celulas_email()
-' selec„o da planilha desejada.
+' selec√£o da planilha desejada.
   ActiveSheet.Select
 
 FINALROW = Cells(Rows.Count, 1).End(xlUp).Row
@@ -513,7 +513,7 @@ Range("a1:t" & FINALROW).Select
    ActiveWorkbook.EnvelopeVisible = True
    
    With ActiveSheet.MailEnvelope
-      .Introduction = "Bom dia equipe, segue o relatÛrio detalhado com as principais REC's abertas do backlog crÌtico da equipe da Ger. de OperaÁıes RJO:"
+      .Introduction = "Bom dia equipe, segue o relat√≥rio detalhado com as principais REC's abertas do backlog cr√≠tico da equipe da Ger. de Opera√ß√µes RJO:"
       .Item.To = "oxavier@embratel.com.br"
       .Item.Subject = "Automatiza <Backlog de REC-Ger. Op. RJO> - " & Date
       .Item.send
@@ -536,7 +536,7 @@ End Sub
 '===========================================================
 '===========================================================
 '===========================================================
-'Daqui pra baixo n„o est· sendo utilizado.
+'Daqui pra baixo n√£o est√° sendo utilizado.
 '===========================================================
 
 Private Sub AutomatizaOperRJO()
@@ -636,7 +636,7 @@ Private Sub TabelOperCF1()
     PT.AddFields RowFields:="RESPONSAVEL", ColumnFields:="INTERVAL"
     
     
-    ' Calcula quantidade de reicidÍncias (sim/n„o)
+    ' Calcula quantidade de reicid√™ncias (sim/n√£o)
     With PT.PivotFields("NOME FANTASIA")
         .Orientation = xlDataField
         .Function = xlCount
@@ -644,34 +644,34 @@ Private Sub TabelOperCF1()
     
     End With
 
-    ' Mensura Respons·vel pela anormalidade
+    ' Mensura Respons√°vel pela anormalidade
     With PT.PivotFields("NOME FANTASIA")
         .Orientation = xlRowField
         .Position = 2
     End With
    
-   ' Mensura Respons·vel pela anormalidade
-    With PT.PivotFields("N∞REC")
+   ' Mensura Respons√°vel pela anormalidade
+    With PT.PivotFields("N¬∞REC")
         .Orientation = xlRowField
         .Position = 3
     End With
    
-   ' Mensura Respons·vel pela anormalidade
-    With PT.PivotFields("N∞ RAL")
+   ' Mensura Respons√°vel pela anormalidade
+    With PT.PivotFields("N¬∞ RAL")
         .Orientation = xlRowField
         .Position = 4
     End With
    
    ' Retira o Subtotal do campo RESP_ANOR
-   PT.PivotFields("N∞ RAL").Subtotals(1) = False
-   PT.PivotFields("N∞REC").Subtotals(1) = False
+   PT.PivotFields("N¬∞ RAL").Subtotals(1) = False
+   PT.PivotFields("N¬∞REC").Subtotals(1) = False
    PT.PivotFields("NOME FANTASIA").Subtotals(1) = False
    
-  ' Aplica a formataÁ„o
+  ' Aplica a formata√ß√£o
   ' Autoajusta colunas, aplica negrito aos titulos e os alinha a direita
    
    ActiveSheet.PivotTables("PivotTable1").TableStyle2 = "PivotStyleMedium2"
-   ActiveSheet.PivotTables("PivotTable1").PivotFields("AQR").AutoSort Order:=xlDescending, Field:="Soma de N∞REC"
+   ActiveSheet.PivotTables("PivotTable1").PivotFields("AQR").AutoSort Order:=xlDescending, Field:="Soma de N¬∞REC"
    
    PT.ManualUpdate = False
    PT.ManualUpdate = True
@@ -754,7 +754,7 @@ Private Sub TabelOperCF2()
     PT.AddFields RowFields:="CF", ColumnFields:="INTERVAL"
     
     
-    ' Calcula quantidade de reicidÍncias (sim/n„o)
+    ' Calcula quantidade de reicid√™ncias (sim/n√£o)
     With PT.PivotFields("CF EXEC")
         .Orientation = xlDataField
         .Function = xlCount
@@ -762,34 +762,34 @@ Private Sub TabelOperCF2()
     
     End With
 
-    ' Mensura Respons·vel pela anormalidade
+    ' Mensura Respons√°vel pela anormalidade
     With PT.PivotFields("CF EXEC")
         .Orientation = xlRowField
         .Position = 2
     End With
    
-   ' Mensura Respons·vel pela anormalidade
-    With PT.PivotFields("N∞REC")
+   ' Mensura Respons√°vel pela anormalidade
+    With PT.PivotFields("N¬∞REC")
         .Orientation = xlRowField
         .Position = 3
     End With
    
-   ' Mensura Respons·vel pela anormalidade
-    With PT.PivotFields("N∞ RAL")
+   ' Mensura Respons√°vel pela anormalidade
+    With PT.PivotFields("N¬∞ RAL")
         .Orientation = xlRowField
         .Position = 4
     End With
    
    ' Retira o Subtotal do campo RESP_ANOR
-   PT.PivotFields("N∞ RAL").Subtotals(1) = False
-   PT.PivotFields("N∞REC").Subtotals(1) = False
+   PT.PivotFields("N¬∞ RAL").Subtotals(1) = False
+   PT.PivotFields("N¬∞REC").Subtotals(1) = False
    PT.PivotFields("NOME FANTASIA").Subtotals(1) = False
    PT.PivotFields("CF EXEC").Subtotals(1) = False
-  ' Aplica a formataÁ„o
+  ' Aplica a formata√ß√£o
   ' Autoajusta colunas, aplica negrito aos titulos e os alinha a direita
    
    ActiveSheet.PivotTables("PivotTable1").TableStyle2 = "PivotStyleMedium2"
-   ActiveSheet.PivotTables("PivotTable1").PivotFields("AQR").AutoSort Order:=xlDescending, Field:="Soma de N∞REC"
+   ActiveSheet.PivotTables("PivotTable1").PivotFields("AQR").AutoSort Order:=xlDescending, Field:="Soma de N¬∞REC"
    
    PT.ManualUpdate = False
    PT.ManualUpdate = True
@@ -981,12 +981,12 @@ If Cells(i, 2).Value = "ACS Provedores Total" Then
     Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
 Else
 
-If Cells(i, 2).Value = "Ass. TÈc. Total" Then
+If Cells(i, 2).Value = "Ass. T√©c. Total" Then
     Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
     Cells(i, 2).Resize(1, valor).Font.Bold = True
     Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
 Else
-If Cells(i, 2).Value = "Cabos ”pticos Total" Then
+If Cells(i, 2).Value = "Cabos √ìpticos Total" Then
     Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
     Cells(i, 2).Resize(1, valor).Font.Bold = True
     Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
@@ -998,7 +998,7 @@ If Cells(i, 2).Value = "C. Locais Total" Then
     Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
 Else
 
-If Cells(i, 2).Value = "ImplantaÁ„o Total" Then
+If Cells(i, 2).Value = "Implanta√ß√£o Total" Then
     Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
     Cells(i, 2).Resize(1, valor).Font.Bold = True
     Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
@@ -1098,7 +1098,7 @@ ActiveSheet.Range("M2").Value = ".>2d"
 ActiveSheet.Range("M3").Value = "1d-2d"
 ActiveSheet.Range("M4").Value = "8h-24hs"
 ActiveSheet.Range("M5").Value = "4h-8h"
-ActiveSheet.Range("M6").Value = "AtÈ 4hs"
+ActiveSheet.Range("M6").Value = "At√© 4hs"
 ActiveSheet.Range("M7").Value = "TOTAL"
 
 ActiveSheet.Range("M2").Interior.Color = vbRed
@@ -1124,11 +1124,11 @@ With Selection
     End With
 Call borda
 
-ActiveSheet.Range("M9").Value = "DESCRI«√O"
+ActiveSheet.Range("M9").Value = "DESCRI√á√ÉO"
 ActiveSheet.Range("N9").Value = "CASOS"
 ActiveSheet.Range("O9").Value = "(%)"
 ActiveSheet.Range("M10").Value = "CC reincidente*"
-ActiveSheet.Range("M11").Value = "— reincidente"
+ActiveSheet.Range("M11").Value = "√ë reincidente"
 
 ActiveSheet.Range("M10").Font.Color = vbWhite
 ActiveSheet.Range("M10").Interior.Color = vbRed
@@ -1152,11 +1152,11 @@ Columns("L:M").Select
 
 ActiveSheet.Range("N15:O15").Select
 Selection.Merge
-ActiveSheet.Range("N15").Value = "AN¡LISE"
-ActiveSheet.Range("N16").Value = "M¡XIMO"
-ActiveSheet.Range("N17").Value = "MÕNIMO"
-ActiveSheet.Range("N18").Value = "DESVIO PADR√O"
-ActiveSheet.Range("N19").Value = "M…DIA"
+ActiveSheet.Range("N15").Value = "AN√ÅLISE"
+ActiveSheet.Range("N16").Value = "M√ÅXIMO"
+ActiveSheet.Range("N17").Value = "M√çNIMO"
+ActiveSheet.Range("N18").Value = "DESVIO PADR√ÉO"
+ActiveSheet.Range("N19").Value = "M√âDIA"
 ActiveSheet.Range("N20").Value = "DIA"
 ActiveSheet.Range("O20").Value = "CASOS"
 
@@ -1304,7 +1304,7 @@ Totalrow = FINALROW
 
 FINALROW = FINALROW + 1
 Range("B" & FINALROW).FormulaLocal = "=AGORA()"
-Range("C2:C" & FINALROW).FormulaLocal = "=M S(B2)"
+Range("C2:C" & FINALROW).FormulaLocal = "=M√äS(B2)"
 Range("E2:E" & FINALROW).FormulaLocal = "=ANO(B2)"
 Range("F" & FINALROW).FormulaLocal = "=CONT.VALORES(Automatiza!A2:A100)"
 
@@ -1436,17 +1436,17 @@ Private Sub CondicionalHistorico()
 Dim A As Date, B As Date
 FINALROW = Cells(Rows.Count, 2).End(xlUp).Row
 
-'A vari·vel "TempoMinuto" recebe o valor da coluna Q
+'A vari√°vel "TempoMinuto" recebe o valor da coluna Q
 A = ActiveSheet.Range("B" & FINALROW).Value
 B = ActiveSheet.Range("B" & FINALROW - 1).Value
 
 C = (A - B) * 1440
 
 
-'Verifica se o servidor est· atualizado (considera 30 minutos de delay)
-'se È maior igual a 30 minutos
+'Verifica se o servidor est√° atualizado (considera 30 minutos de delay)
+'se √© maior igual a 30 minutos
     If (C >= 0 And C <= 700) Then
-        MsgBox "Valor j· foi incluÌdo, confira e feche a planilha"
+        MsgBox "Valor j√° foi inclu√≠do, confira e feche a planilha"
         Rows(FINALROW).Delete Shift:=xlUp
         Columns("A:A").Select
         Selection.ClearContents
@@ -1509,7 +1509,7 @@ Private Sub TDinanOP()
     PT.AddFields RowFields:="MES", ColumnFields:="ANO"
     
     
-    ' Calcula quantidade de reicidÍncias (sim/n„o)
+    ' Calcula quantidade de reicid√™ncias (sim/n√£o)
     With PT.PivotFields("Recs")
         .Orientation = xlDataField
         .Function = xlAverage
@@ -1519,7 +1519,7 @@ Private Sub TDinanOP()
     End With
 
    
-  ' Aplica a formataÁ„o
+  ' Aplica a formata√ß√£o
   ' Autoajusta colunas, aplica negrito aos titulos e os alinha a direita
    
    ActiveSheet.PivotTables("PivotTable1").TableStyle2 = "PivotStyleMedium2"
@@ -1558,7 +1558,7 @@ Private Sub TDinanOP()
     
 
 Range("G2").CurrentRegion.Select
-       Selection.Replace What:="Total geral", Replacement:="MÈdia", LookAt:=xlPart, _
+       Selection.Replace What:="Total geral", Replacement:="M√©dia", LookAt:=xlPart, _
        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
        ReplaceFormat:=False
        
@@ -1579,14 +1579,14 @@ With Selection
         .VerticalAlignment = xlCenter
     End With
 
-' M¡XIMO
-Range("O16").FormulaLocal = "=M¡XIMO(O21:O50)"
-' MÕNIMO
-Range("O17").FormulaLocal = "=MÕNIMO(O21:O50)"
-' DESVIO PADR√O
+' M√ÅXIMO
+Range("O16").FormulaLocal = "=M√ÅXIMO(O21:O50)"
+' M√çNIMO
+Range("O17").FormulaLocal = "=M√çNIMO(O21:O50)"
+' DESVIO PADR√ÉO
 Range("O18").FormulaLocal = "=DESVPAD(O21:O50)"
-' M…DIA
-Range("O19").FormulaLocal = "=M…DIA(O21:O50)"
+' M√âDIA
+Range("O19").FormulaLocal = "=M√âDIA(O21:O50)"
 
 Range("O16:O19").Select
 With Selection
@@ -1644,9 +1644,9 @@ Selection.Merge
 
 
 ActiveSheet.Range("A2").Value = "Bom dia equipe,"
-ActiveSheet.Range("A3").Value = "Segue a lista das principais REC's aberta do nosso backlog crÌtico,"
-ActiveSheet.Range("A4").Value = "*A LISTA EST¡ ORDENADA PELA CRITICIDADE DAS REC's NO INTERVALO, RESPONS¡VEL, CF, E A EVOLU«√O DA QUANTIDADE EM 30 DIAS, CONSIDERANDO"
-ActiveSheet.Range("A5").Value = "O MAIOR VALOR, O MENOR, DESVIO PADR√O E M…DIA M”VEL."
+ActiveSheet.Range("A3").Value = "Segue a lista das principais REC's aberta do nosso backlog cr√≠tico,"
+ActiveSheet.Range("A4").Value = "*A LISTA EST√Å ORDENADA PELA CRITICIDADE DAS REC's NO INTERVALO, RESPONS√ÅVEL, CF, E A EVOLU√á√ÉO DA QUANTIDADE EM 30 DIAS, CONSIDERANDO"
+ActiveSheet.Range("A5").Value = "O MAIOR VALOR, O MENOR, DESVIO PADR√ÉO E M√âDIA M√ìVEL."
 Range("A4:A5").Select
     With Selection
         .Font.Bold = True
