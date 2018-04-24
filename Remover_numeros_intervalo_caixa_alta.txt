@@ -1,0 +1,16 @@
+'Remove acentos e caracteres especiais e deixa o texto em caixa alta
+Public Function RemoverNumero(ByVal Caract As Variant) As Variant
+'Declaracao de Variaveis
+Dim i           As Long
+
+    For i = Len(Caract) To 1 Step -1
+        If IsNumeric(Mid(Caract, i, 1)) Then
+            Caract = Replace(Caract, Mid(Caract, i, 1), "")
+        End If
+    Next
+
+'Retorno do texto
+RemoverNumero = UCase(Application.WorksheetFunction.Trim(Caract))
+    
+End Function
+
