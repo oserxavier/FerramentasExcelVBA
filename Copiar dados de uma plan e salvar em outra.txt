@@ -1,0 +1,23 @@
+Sub Copiar_Dados()
+        Dim wsOrigem As Worksheet
+        Dim wsDestino As Worksheet
+        
+        'Arquivo Destino, abrimos primeiro
+        'Ajuste o caminho do mesmo
+        Workbooks.Open Filename:="C:\Documents and Settings\....\Master.xls"
+        
+        'Arquivos e Abas de Origem e Destino
+        Set wsOrigem = Workbooks("1.xls").Worksheets("Plan1")
+        Set wsDestino = Workbooks("BD.xls").Worksheets("Plan1")
+          
+            With wsOrigem
+                .Range("B2:B500").Copy Destination:=wsDestino.Range("B2")
+                .Range("F2:F500").Copy Destination:=wsDestino.Range("K2")
+                .Range("J2:J500").Copy Destination:=wsDestino.Range("T2")
+            End With
+      
+      'Fecha o Arquivo Destino e Salva
+        Workbooks("BD.xls").Close SaveChanges:=True
+        
+        MsgBox "Introdução de Dados Concluída"
+    End Sub
