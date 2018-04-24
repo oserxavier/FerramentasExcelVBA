@@ -1,0 +1,27 @@
+Sub Workbook_SheetChange(ByVal Sh As Object, ByVal Target As Range)
+
+    ' Author:                     Date:               Contact:                 URL:
+    ' André Bernardes             02/10/2012 10:58    bernardess@gmail.com     http://inanyplace.blogspot.com/
+    ' documenta as alterações efetuadas nessa planilha.
+    
+    Dim wsHist As Worksheet, Rng As Range
+    
+    Set wsHist = Sheets("History")
+    Let Application.ScreenUpdating = False
+    Let Sheets("History").Visible = True
+    
+    If Sh Is wsHist Then Exit Sub
+
+    Set Rng = wsHist.Range("A" & Rows.Count).End(xlUp).Offset(1)
+
+    With Rng
+        Let .Value = Now
+        Let .Offset(, 1) = "Sheet: " & Sh.Name & " in Workbook: " & Replace(Sh.Application.Caption, "Microsoft Excel - ", "") & " no Path: " & Sh.Application.DefaultFilePath
+        Let .Offset(, 2) = "Alterado por: " & Sh.Application.UserName
+        Let .Offset(, 3) = Target.Address
+        Let .Offset(, 4) = Target.Formula
+    End With
+
+    Let Application.ScreenUpdating = True
+    Let Sheets("History").Visible = False
+End Sub
