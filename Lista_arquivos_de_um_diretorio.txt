@@ -1,0 +1,37 @@
+Sub ListaArquivos()
+    'Se quiser utilizar Early Binding, adicione a biblioteca Microsoft Scripting Runtime
+    
+    'Mude esse valor para buscar outro caminho:
+    Const strCaminho As String = "\\wvrjo055910\Sites\bd\"
+    
+    'Declaração de variáveis:
+    Dim fso As Object 'Scripting.FileSystemObject
+    Dim fld As Object 'Scripting.Folder
+    Dim fl As Object 'Scripting.File
+    Dim n As Long
+    
+    'Aqui é criado o objeto que comunica com as pastas do computador
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    'Esse objeto executa um método do FileSystemObject
+    'para buscar atribuir à variável fld uma pasta
+    Set fld = fso.GetFolder(strCaminho)
+    
+    With ActiveSheet
+        'Limpa e formata a Planilha ativa:
+        .Cells.Delete
+        .Range("A1:D1") = Array("Caminho", "Nome", "Tamanho", "Modificado em:")
+        n = 2
+        
+        'Laço em cada arquivo do caminho desejado:
+        For Each fl In fld.Files
+            .Cells(n, "A") = fl.Path 'Caminho completo
+            .Cells(n, "B") = fl.Name 'Nome
+            .Cells(n, "C") = fl.Size 'Tamanho
+            .Cells(n, "D") = fl.DateLastModified 'Data de Modificação
+            'Note que você poderia adicionar outras propriedades dos arquivos em outras colunas
+            'Nesse exemplo foram mostrados como visualizar apenas quatro de muitas propriedades de um arquivo
+            n = n + 1
+        Next fl
+    End With
+End Sub
