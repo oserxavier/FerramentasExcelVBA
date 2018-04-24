@@ -1,0 +1,28 @@
+Public Function lfRetiraNumeros(ByVal vValor As String) As String
+    'Atualiza o cálculo automaticamente
+    Application.Volatile
+ 
+    'Conta a quantidade de caracteres
+    Dim vQtdeCaract As Long
+    Dim vControle   As Boolean
+ 
+    vQtdeCaract = Len(vValor)
+    vControle = False
+ 
+    'Para cada caractere identifica se é número ou texto
+    For i = 1 To vQtdeCaract
+        'Se for número adiciona no retorno da função
+        If IsNumeric(Mid(vValor, i, 1)) Then
+            If vControle = True And lfRetiraNumeros <> vbNullString Then
+                lfRetiraNumeros = lfRetiraNumeros + " "
+            End If
+            vControle = False
+            lfRetiraNumeros = lfRetiraNumeros & Mid(vValor, i, 1)
+        Else
+            vControle = True
+        End If
+    Next
+  'Substitui espaços em branco por / e tira espaços em branco no final do retorno da função
+    lfRetiraNumeros = Replace(Trim(lfRetiraNumeros), " ", "/")
+ 
+End Function
