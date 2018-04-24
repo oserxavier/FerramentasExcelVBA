@@ -1,0 +1,12 @@
+Sub Altera()
+
+  Sheets("Receita").Select
+  Range("C1:C10").Select
+
+  Dim rngCelula As Range
+  For Each rngCelula In Selection
+    rngCelula.FormulaLocal = rngCelula.Value
+  Next rngCelula
+  Range("G1").Select
+
+End Sub
