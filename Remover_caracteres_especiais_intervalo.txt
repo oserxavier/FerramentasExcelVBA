@@ -1,0 +1,30 @@
+'Remove acentos e caracteres especiais e deixa o texto em caixa alta
+Public Function ArrumarTexto(ByVal Caract As Variant) As Variant
+'Declaracao de Variaveis
+Dim i       As Long
+Dim p       As Variant
+Dim codiA   As String
+Dim codiB   As String
+
+'Caracteres impeditivos
+codiA = "àáâãäèéêëìíîïòóôõöùúûüÀÁÂÃÄÈÉÊËÌÍÎÒÓÔÕÖÙÚÛÜçÇñÑ-'´)([]/\*-+.,!@#$%¨&§¹²³£¢¬"
+'Caracteres substitutivos
+codiB = "aaaaaeeeeiiiiooooouuuuAAAAAEEEEIIIOOOOOUUUUcCnN                            "
+    
+    'Inicia o loop em busca dos caracteres impeditivos
+    For i = 1 To Len(Caract)
+        p = InStr(codiA, Mid(Caract, i, 1))
+        'Verifica a existencia dos caracteres no texto
+        If p > 0 Then
+            'Realiza a substituicao
+            Mid(Caract, i, 1) = Mid(codiB, p, 1)
+        End If
+    Next
+
+'Retorno do texto
+ArrumarTexto = UCase(Application.WorksheetFunction.Trim(Caract))
+     
+End Function
+
+
+E esse para remover número:
