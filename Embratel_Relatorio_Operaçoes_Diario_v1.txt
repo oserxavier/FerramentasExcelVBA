@@ -1,0 +1,1775 @@
+Sub OfensorDiarOperRJO()
+Sheets("Automatiza").Select
+Cells.Select
+    Selection.Delete Shift:=xlUp
+
+On Error Resume Next
+
+'Cria variáveis objetos que acessarão o Access e a Tabela:
+Dim cnConexao As New ADODB.Connection
+Dim rsTabela As New ADODB.Recordset
+Dim caminho As String
+'Instancia as variáveis ("prepara" as variáveis):
+Set cnConexao = New ADODB.Connection
+Set rsTabela = New ADODB.Recordset
+'Informa à variável o caminho do Banco de Dados (info na célula J5):
+caminho = "\\ntrjo100\stfrjo\Monitoramento AQR\base resumo reconline.mdb"
+Call cnConexao.Open("Provider=Microsoft.Jet.OLEDB.4.0;" & _
+"Data Source=" & caminho)
+'Abre a tabela ALUNOS:
+Call rsTabela.Open("Select * from CF_RJO_todos", cnConexao)
+'Faz loop para trazer os registros:
+Dim i As Integer
+i = 33
+'Configura os cabeçalhos:
+ActiveSheet.Range("A32").Value = "N°REC"
+ActiveSheet.Range("B32").Value = "N°RAL"
+ActiveSheet.Range("C32").Value = "AQR"
+ActiveSheet.Range("D32").Value = "CLIENTE"
+ActiveSheet.Range("E32").Value = "DT.INIC."
+ActiveSheet.Range("F32").Value = "Tmp(min)"
+ActiveSheet.Range("G32").Value = "INTERVAL"
+ActiveSheet.Range("H32").Value = "TMP CLIEN"
+ActiveSheet.Range("I32").Value = "TMP EBT"
+ActiveSheet.Range("J32").Value = "CF EXEC"
+ActiveSheet.Range("K32").Value = "RESP"
+ActiveSheet.Range("L32").Value = "EQUIPE"
+ActiveSheet.Range("M32").Value = "CF EXEC"
+ActiveSheet.Range("N32").Value = "CNL CF"
+ActiveSheet.Range("O32").Value = "UF CF"
+ActiveSheet.Range("P32").Value = "AÇÃO TÉC"
+ActiveSheet.Range("Q32").Value = "OBS ITEM"
+ActiveSheet.Range("R32").Value = "ATUAL."
+
+'Coloca em negrito:
+Plan1.Range("A32:Q32").Font.Bold = True
+Do While Not (rsTabela.EOF)
+
+ActiveSheet.Range("A" & i).Value = rsTabela("NUM_RECUP").Value
+ActiveSheet.Range("B" & i).Value = rsTabela("NUM_RAL").Value
+ActiveSheet.Range("C" & i).Value = rsTabela("COD_CONTA").Value
+ActiveSheet.Range("D" & i).Value = rsTabela("NOME_FANTASIA").Value
+ActiveSheet.Range("E" & i).Value = rsTabela("DATA_INICIO").Value
+ActiveSheet.Range("F" & i).Value = rsTabela("""AGE(H)""").Value
+ActiveSheet.Range("G" & i).Value = rsTabela("Intervalo").Value
+ActiveSheet.Range("H" & i).Value = rsTabela("TEMPO_CLIENTE").Value
+ActiveSheet.Range("I" & i).Value = rsTabela("TEMPO_EMBRATEL").Value
+ActiveSheet.Range("J" & i).Value = rsTabela("CF_EXEC").Value
+ActiveSheet.Range("K" & i).Value = rsTabela("LISTA_DISTR").Value
+ActiveSheet.Range("L" & i).Value = rsTabela("EQUIPE").Value
+ActiveSheet.Range("M" & i).Value = rsTabela("CF_EXEC").Value
+ActiveSheet.Range("N" & i).Value = rsTabela("SIGLA_LOCALIDADE_CF_EXEC").Value
+ActiveSheet.Range("O" & i).Value = rsTabela("UF_CF_EXEC").Value
+ActiveSheet.Range("P" & i).Value = rsTabela("DESC_ACAO_TECNICA").Value
+ActiveSheet.Range("Q" & i).Value = rsTabela("OBS_ITEM").Value
+ActiveSheet.Range("R" & i).Value = rsTabela("DATA_ATUAL").Value
+
+    i = i + 1 'Incrementa a posição da linha
+    rsTabela.MoveNext 'Move para o próximo registro na Tabela
+Loop
+rsTabela.Close 'Fecha a tabela (aberta virtualmente)
+cnConexao.Close 'Fecha a conexão com o Banco
+'Altera a altura da coluna p/ 12,5
+
+' Formato data
+'Range("d33:d" & i, "q33:q" & i).Select
+'Selection.NumberFormat = "[$-409]d/m/yy h:mm AM/PM;@"
+' Formato inteiro
+'Range("e33:e" & i).Select
+'
+
+i = i - 33
+
+Range("F33").Resize(i, 1).FormulaLocal = "=($Y$1-E33)*1440"
+
+Columns("F:F").Select
+    Selection.NumberFormat = "0"
+    
+' Calcula o horário para comparar com o condicional servidor
+Range("Y1").FormulaLocal = "=AGORA()"
+Range("Z1").FormulaLocal = "=(Y1-R33)*1440"
+
+' Calcula o horário inicial e o horário corrente
+Range("F33").Resize(i, 1).FormulaLocal = "=($Y$1-E33)*1440"
+
+' Copia e transforma em valores
+Range("A32").CurrentRegion.Select
+Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+    
+'Define as bordas diagonais (inferior e superior):
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+'Define a borda para parte esquerda da planilha:
+    With Selection.Borders(xlEdgeLeft)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+    End With
+'Define a borda para parte superior da planilha:
+  With Selection.Borders(xlEdgeTop)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+'Define a borda para parte inferior da planilha:
+  With Selection.Borders(xlEdgeBottom)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+End With
+'Define a borda para parte direita da planilha:
+  With Selection.Borders(xlEdgeRight)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+ 'Define a borda para parte de dentro (vertical):
+  With Selection.Borders(xlInsideVertical)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+  'Define a borda para parte de dentro (horizontal):
+  With Selection.Borders(xlInsideHorizontal)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+
+
+Cells.Select
+    Selection.RowHeight = 12.5
+    
+'Altera para fonte Calibri tamanho 8
+
+    With Selection.Font
+        .Name = "Calibri"
+        .Size = 8
+    End With
+Columns.EntireColumn.AutoFit
+ActiveSheet.Range("A32:Q32").Font.Bold = True
+
+Columns("A:O").Select
+  With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+    End With
+
+y = i + 33
+
+    Range("F33").Select
+    ActiveWorkbook.Worksheets("Automatiza").Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("Automatiza").Sort.SortFields.Add Key:=Range("F33") _
+        , SortOn:=xlSortOnValues, Order:=xlDescending, DataOption:=xlSortNormal
+    With ActiveWorkbook.Worksheets("Automatiza").Sort
+        .SetRange Range("A32:R" & y)
+        .Header = xlGuess
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+
+Call CondicionalServidor
+
+End Sub
+
+' Está calculando a qte de caracteres no campo, mas está sem utilidade
+
+Private Sub TransCC()
+    Dim Item As String
+    Dim Tamanho As Integer
+    Dim resposta As String
+    Dim z As Integer
+    
+i = 33
+Do While (ActiveSheet.Range("A" & i).Value <> "")
+
+' Coloca o valor da conta corrente na variavel "Item"
+Item = ActiveSheet.Range("c" & i).Value
+
+' Calcula o tamanho da conta
+Tamanho = Len(Item) - 4
+z = Tamanho
+
+' Armazena a conta sem a Sub
+MyStr = Left(Item, z)
+    
+' Apresenta a conta sem a sub
+ActiveSheet.Range("c" & i).Value = MyStr
+
+    i = i + 1
+Loop
+
+End Sub
+
+Private Sub CondicionalServidor()
+Dim temp As Long
+'A variável "TempoMinuto" recebe o valor da coluna Q
+temp = ActiveSheet.Range("z1").Value
+
+'Verifica se o servidor está atualizado (considera 30 minutos de delay)
+'se é maior igual a 30 minutos
+    If (temp >= 30) Then
+        MsgBox "Fora do horário padrão, atualize o servidor!"
+        ActiveSheet.Range("A1").Select
+        Range("W1:Y1").Select
+        Selection.ClearContents
+    Else
+        Range("W1:Z1").Select
+        Selection.ClearContents
+        Call CalcInterval
+End If
+
+End Sub
+
+Private Sub CalcInterval()
+FINALROW = Cells(Rows.Count, 1).End(xlUp).Row
+
+For i = 33 To FINALROW
+
+If Cells(i, 6).Value < 60 Then
+        Cells(i, 7).Value = ".< 2h"
+        Cells(i, 7).Interior.Color = RGB(0, 102, 255)
+        Cells(i, 7).Font.Bold = True
+        Cells(i, 7).Font.Color = vbWhite
+Else
+
+If Cells(i, 6).Value >= 60 And Cells(i, 6).Value < 180 Then
+        Cells(i, 7).Value = "2h-3h"
+        Cells(i, 7).Interior.Color = RGB(50, 205, 50)
+        Cells(i, 7).Font.Bold = True
+        Cells(i, 7).Font.Color = vbWhite
+Else
+
+If Cells(i, 6).Value >= 180 And Cells(i, 6).Value < 360 Then
+        Cells(i, 7).Value = "3h-6h"
+        Cells(i, 7).Interior.Color = RGB(34, 139, 34)
+        Cells(i, 7).Font.Bold = True
+        Cells(i, 7).Font.Color = vbWhite
+Else
+
+If Cells(i, 6).Value >= 360 And Cells(i, 6).Value < 720 Then
+        Cells(i, 7).Value = "6h-12h"
+        Cells(i, 7).Interior.Color = RGB(79, 98, 40)
+        Cells(i, 7).Font.Bold = True
+        Cells(i, 7).Font.Color = vbWhite
+Else
+
+If Cells(i, 6).Value >= 720 And Cells(i, 6).Value < 1440 Then
+        Cells(i, 7).Value = "12h-24h"
+        Cells(i, 7).Interior.Color = RGB(255, 215, 0)
+        Cells(i, 7).Font.Bold = True
+        Cells(i, 7).Font.Color = vbBlack
+Else
+
+If Cells(i, 6).Value >= 1440 And Cells(i, 6).Value < 2880 Then
+        Cells(i, 7).Value = "24h-48h"
+        Cells(i, 7).Interior.Color = RGB(255, 127, 0)
+        Cells(i, 7).Font.Bold = True
+        Cells(i, 7).Font.Color = vbWhite
+Else
+
+If Cells(i, 6).Value >= 2880 And Cells(i, 6).Value < 4320 Then
+        Cells(i, 7).Value = "48h-72h"
+        Cells(i, 7).Interior.Color = RGB(255, 0, 0)
+        Cells(i, 7).Font.Bold = True
+        Cells(i, 7).Font.Color = vbWhite
+Else
+
+If Cells(i, 6).Value > 4320 Then
+        Cells(i, 7).Value = ".> 72h"
+        Cells(i, 7).Interior.Color = RGB(112, 48, 160)
+        Cells(i, 7).Font.Bold = True
+        Cells(i, 7).Font.Color = vbWhite
+Else
+
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+Next i
+
+Call CopYColA
+End Sub
+
+Private Sub CopYColA()
+
+Sheets("modelo").Visible = True
+Sheets("modelo").Select
+ActiveSheet.Range("A5:w30").Select
+Selection.Copy
+
+Sheets("Automatiza").Select
+ActiveSheet.Range("A5:w30").Select
+ActiveSheet.Paste
+Sheets("modelo").Visible = False
+
+Range("t31:u53").Select
+
+'Define as bordas diagonais (inferior e superior):
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+'Define a borda para parte esquerda da planilha:
+    With Selection.Borders(xlEdgeLeft)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+    End With
+'Define a borda para parte superior da planilha:
+  With Selection.Borders(xlEdgeTop)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+'Define a borda para parte inferior da planilha:
+  With Selection.Borders(xlEdgeBottom)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+End With
+'Define a borda para parte direita da planilha:
+  With Selection.Borders(xlEdgeRight)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+ 'Define a borda para parte de dentro (vertical):
+  With Selection.Borders(xlInsideVertical)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+  'Define a borda para parte de dentro (horizontal):
+  With Selection.Borders(xlInsideHorizontal)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+
+For Li = 23 To 53
+Cells(Li, 19).Value = Li - 23
+Next Li
+
+Range("s23:s53").Font.Color = vbWhite
+
+Call Calculo
+
+End Sub
+
+
+Private Sub Calculo()
+
+i = Cells(Rows.Count, 1).End(xlUp).Row
+
+Range("C6").Resize(4, 8).FormulaLocal = "=CONT.SES($G$33:$G$" & i & ";C$5;$L$33:$L$" & i & ";$B6;$K$33:$K$" & i & ";$A6)"
+'                                        =CONT.SES($G$33:$G$" & i & ";C$5;$L$33:$L$" & i & ";$B6;$K$33:$K$" & i & ";A$6)
+
+Range("C11").Resize(6, 8).FormulaLocal = "=CONT.SES($G$33:$G$" & i & ";C$5;$L$33:$L$" & i & ";$B11;$K$33:$K$" & i & ";$A11)"
+Range("C18").Resize(5, 8).FormulaLocal = "=CONT.SES($G$33:$G$" & i & ";C$5;$L$33:$L$" & i & ";$B18;$K$33:$K$" & i & ";$A18)"
+Range("C24").Resize(1, 8).FormulaLocal = "=CONT.SES($G$33:$G$" & i & ";C$5;$L$33:$L$" & i & ";$B24;$K$33:$K$" & i & ";$A24)"
+Range("C26").Resize(1, 8).FormulaLocal = "=CONT.SES($G$33:$G$" & i & ";C$5;$L$33:$L$" & i & ";$B26;$K$33:$K$" & i & ";$A26)"
+Range("C28").Resize(1, 8).FormulaLocal = "=CONT.SES($G$33:$G$" & i & ";C$5;$L$33:$L$" & i & ";$B28;$K$33:$K$" & i & ";$A28)"
+
+' Calcula totais GTs
+Range("C10").Resize(1, 9).FormulaLocal = "=SOMA(C6:C9)"
+Range("C17").Resize(1, 9).FormulaLocal = "=SOMA(C11:C16)"
+Range("C23").Resize(1, 9).FormulaLocal = "=SOMA(C18:C22)"
+Range("C25").Resize(1, 9).FormulaLocal = "=SOMA(C24:C24)"
+Range("C27").Resize(1, 9).FormulaLocal = "=SOMA(C26:C26)"
+Range("C29").Resize(1, 9).FormulaLocal = "=SOMA(C28:C28)"
+
+' Calcula total Geral
+Range("C30").Resize(1, 9).FormulaLocal = "=SOMA(C10;C17;C23;C25;C27;C29)"
+
+' Calcula total linha K
+Range("K6").Resize(25, 1).FormulaLocal = "=SOMA(C6:J6)"
+
+' Tabela II - Percentual de casos
+Range("u6").Resize(8, 1).FormulaLocal = "=CONT.SES($G$33:$G$" & i & ";t6)"
+Range("u14").FormulaLocal = "=(k30)"
+Range("v6").Resize(9, 1).FormulaLocal = "=(u6/$u$14)"
+
+
+    Range("A1:AA30").Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+
+
+Columns("A:K").Select
+    Selection.ColumnWidth = 12.6
+
+Columns("N:O").Select
+    Selection.ColumnWidth = 6
+    
+Columns("S").Select
+    Selection.ColumnWidth = 1
+    
+Columns("T").Select
+    Selection.ColumnWidth = 10.72
+    
+Columns("U:V").Select
+    Selection.ColumnWidth = 5.3
+    
+Rows("5:5").RowHeight = 25.5
+'Rows("30:30").RowHeight = 25.5
+
+Columns("Q:R").Select
+    Selection.Delete Shift:=xlToLeft
+
+Call grafico1
+End Sub
+
+Private Sub grafico1()
+Dim NmAba As String
+NmAba = ActiveSheet.Name
+  
+    ' Page 200
+    Sheets(NmAba).Select
+    Dim WS As Worksheet
+    Set WS = Worksheets(NmAba)
+    WS.Shapes.AddChart(xl3DPieExploded, _
+        Left:=WS.Range("M5").Left, _
+        Top:=WS.Range("M5").Top, _
+        Width:=WS.Range("M5:P19").Width, _
+        Height:=WS.Range("M5:P19").Height _
+        ).Select
+        
+    ActiveChart.ApplyChartTemplate ( _
+        "\\ntrjo100\stfrjo\Monitoramento AQR\Chart\Ozzer_pie3.crtx")
+        
+    ActiveChart.SetSourceData Source:=WS.Range("s6:s13,t6:t13")
+    ActiveChart.Parent.RoundedCorners = True
+    'ActiveChart.ApplyLayout (6)
+    
+    ActiveChart.ChartTitle.Text = "GER. OP. RJO (%)"
+    
+    ActiveChart.PlotArea.Select
+    Selection.Left = 6.17
+    Selection.Top = 37.746
+    Selection.Width = 300.381
+    Selection.Height = 200.036
+Worksheets("Automatiza").Range("A1:P31").CopyPicture Appearance:=xlScreen, Format:=xlPicture
+    'ActiveChart.SeriesCollection(1).Points(3).Select
+    'ActiveCell.Offset(-1, -1).Range("A1").Select
+
+Range("a1").Select
+
+Call Evolucao
+End Sub
+
+
+Private Sub Evolucao()
+
+' Compara se a data do dia é diferente ou igual a data de baixo
+Dim Dt As Date
+Range("r23") = Date
+Dt = Range("r23").Value
+Dt2 = Range("r24").Value
+
+If Dt = Dt2 Then
+Cells(23, 19).Value = Cells(30, 11).Value
+ActiveSheet.Range("R23").Resize(1, 2).Select
+    Selection.Copy
+Cells(24, 18).PasteSpecial xlPasteValuesAndNumberFormats
+
+Else
+
+' Pega o valor total de RECs
+Cells(23, 19).Value = Cells(30, 11).Value
+ActiveSheet.Range("R23").Resize(30, 2).Select
+    Selection.Copy
+Cells(24, 18).PasteSpecial xlPasteValuesAndNumberFormats
+
+End If
+
+Cells(23, 18).Resize(31, 2).Select
+  With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+    End With
+
+End Sub
+
+
+Sub Enviar_dados_celulas_email()
+' selecão da planilha desejada.
+  ActiveSheet.Select
+
+FINALROW = Cells(Rows.Count, 1).End(xlUp).Row
+Range("a1:t" & FINALROW).Select
+      
+      
+   ' como o envelope na ActiveWorkbook.
+   ActiveWorkbook.EnvelopeVisible = True
+   
+   With ActiveSheet.MailEnvelope
+      .Introduction = "Bom dia equipe, segue o relatório detalhado com as principais REC's abertas do backlog crítico da equipe da Ger. de Operações RJO:"
+      .Item.To = "oxavier@embratel.com.br"
+      .Item.Subject = "Automatiza <Backlog de REC-Ger. Op. RJO> - " & Date
+      .Item.send
+   End With
+[D1].Select
+End Sub
+
+
+
+
+
+
+'===========================================================
+'===========================================================
+'===========================================================
+'===========================================================
+'===========================================================
+'===========================================================
+'===========================================================
+'===========================================================
+'===========================================================
+'===========================================================
+'Daqui pra baixo não está sendo utilizado.
+'===========================================================
+
+Private Sub AutomatizaOperRJO()
+FINALROW = Cells(Rows.Count, 1).End(xlUp).Row
+Totalrow = FINALROW
+
+Range("U2:U" & FINALROW).Select
+    Selection.Replace What:="/", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Selection.Replace What:="  ", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Selection.Replace What:=" ", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+
+
+Columns("V:W").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+
+ActiveSheet.Range("V1").Value = "CF"
+ActiveSheet.Range("W1").Value = "RESPONSAVEL"
+Range("V2:V" & FINALROW).FormulaLocal = "=SEERRO(PROCV(U2;CF!$A$2:$C$150;2;FALSO);""OUTCF"")"
+Range("W2:W" & FINALROW).FormulaLocal = "=SEERRO(PROCV(U2;CF!$A$2:$C$150;3;FALSO);""OUTCF"")"
+
+Range("V2:W" & FINALROW).Select
+Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+
+Call ExcluiOutherCF
+End Sub
+Private Sub ExcluiOutherCF()
+Dim IndexRow As Long
+Dim FINALROW As String
+FINALROW = Range("V" & Rows.Count).End(xlUp).Row
+For IndexRow = FINALROW To 2 Step -1
+    If Range("V" & IndexRow).Value = "OUTCF" And Range("A" & IndexRow).Value <> "" Then _
+        Rows(IndexRow).Delete Shift:=xlUp
+Next IndexRow
+Call FormatoEmail
+End Sub
+
+Private Sub FormatoEmail()
+' Deleta colunas
+Sheets("Automatiza").Select
+
+Dim x, y As Range, z As Integer
+x = Array(3, 4, 9, 10, 11, 12, 14, 15, 17, 18, 19, 20, 24, 25)
+Set y = Columns(x(0))
+For z = 1 To UBound(x)
+Set y = Union(y, Columns(x(z)))
+Next z
+y.Delete Shift:=xlToLeft
+
+Call TabelOperCF1
+
+End Sub
+
+Private Sub TabelOperCF1()
+
+
+    ' Page 292-293
+    ' Use a Pivot Table to create a static summary report
+    ' with model going down the rows and regions across
+    Dim WSD As Worksheet
+    Dim PTCache As PivotCache
+    Dim PT As PivotTable
+    Dim PRange As Range
+    Dim FINALROW As Long
+    Set WSD = ActiveSheet
+        
+    ' Delete any prior pivot tables
+    For Each PT In WSD.PivotTables
+        PT.TableRange2.Clear
+    Next PT
+    'WSD.Range("J1:Z1").EntireColumn.Clear
+        
+    ' Define input area and set up a Pivot Cache
+    FINALROW = WSD.Cells(Application.Rows.Count, 1).End(xlUp).Row
+    Finalcol = WSD.Cells(1, Application.Columns.Count). _
+        End(xlToLeft).Column
+    Set PRange = WSD.Cells(1, 1).Resize(FINALROW, Finalcol)
+    Set PTCache = ActiveWorkbook.PivotCaches.Add(SourceType:= _
+        xlDatabase, SourceData:=PRange.Address)
+    
+    ' Create the Pivot Table from the Pivot Cache
+    Set PT = PTCache.CreatePivotTable(TableDestination:=WSD. _
+        Cells(FINALROW + 3, 2), TableName:="PivotTable1")
+    
+    ' Turn off updating while building the table
+    PT.ManualUpdate = True
+    
+    ' Set up the row fields
+    PT.AddFields RowFields:="RESPONSAVEL", ColumnFields:="INTERVAL"
+    
+    
+    ' Calcula quantidade de reicidências (sim/não)
+    With PT.PivotFields("NOME FANTASIA")
+        .Orientation = xlDataField
+        .Function = xlCount
+        .Position = 1
+    
+    End With
+
+    ' Mensura Responsável pela anormalidade
+    With PT.PivotFields("NOME FANTASIA")
+        .Orientation = xlRowField
+        .Position = 2
+    End With
+   
+   ' Mensura Responsável pela anormalidade
+    With PT.PivotFields("N°REC")
+        .Orientation = xlRowField
+        .Position = 3
+    End With
+   
+   ' Mensura Responsável pela anormalidade
+    With PT.PivotFields("N° RAL")
+        .Orientation = xlRowField
+        .Position = 4
+    End With
+   
+   ' Retira o Subtotal do campo RESP_ANOR
+   PT.PivotFields("N° RAL").Subtotals(1) = False
+   PT.PivotFields("N°REC").Subtotals(1) = False
+   PT.PivotFields("NOME FANTASIA").Subtotals(1) = False
+   
+  ' Aplica a formatação
+  ' Autoajusta colunas, aplica negrito aos titulos e os alinha a direita
+   
+   ActiveSheet.PivotTables("PivotTable1").TableStyle2 = "PivotStyleMedium2"
+   ActiveSheet.PivotTables("PivotTable1").PivotFields("AQR").AutoSort Order:=xlDescending, Field:="Soma de N°REC"
+   
+   PT.ManualUpdate = False
+   PT.ManualUpdate = True
+    
+    Cells.Select
+    With Selection.Font
+        .Name = "Calibri"
+        .Size = 8
+    End With
+    Selection.Columns.AutoFit
+     
+  
+  Columns("F:J").Select
+    Selection.ColumnWidth = 11
+  
+  Columns("D:K").Select
+  With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+    End With
+   Columns("E:E").Select
+    Selection.ColumnWidth = 9.5
+      
+    ' PT.TableRange2 contains the results. Move these to J10
+    ' as just values and not a real pivot table.
+    PT.TableRange2.Offset(1, 0).Copy
+    WSD.Cells(FINALROW + 3, 2).PasteSpecial xlPasteValuesAndNumberFormats
+
+    
+    ' PasteFormats
+
+    ' At this point, the worksheet looks like Figure 13.10
+    ' Stop
+                
+    ' Delete the original Pivot Table & the Pivot Cache
+    'PT.TableRange2.Clear
+    'Set PTCache = Nothing
+
+FINALROW = Cells(Rows.Count, 11).End(xlUp).Row
+Totalrow = FINALROW
+Call TabelOperCF2
+End Sub
+
+
+Private Sub TabelOperCF2()
+
+
+    ' Page 292-293
+    ' Use a Pivot Table to create a static summary report
+    ' with model going down the rows and regions across
+    Dim WSD As Worksheet
+    Dim PTCache As PivotCache
+    Dim PT As PivotTable
+    Dim PRange As Range
+    Dim FINALROW As Long
+    Set WSD = ActiveSheet
+        
+    ' Delete any prior pivot tables
+    For Each PT In WSD.PivotTables
+        PT.TableRange2.Clear
+    Next PT
+    'WSD.Range("J1:Z1").EntireColumn.Clear
+        
+    ' Define input area and set up a Pivot Cache
+    FINALROW = WSD.Cells(Application.Rows.Count, 1).End(xlUp).Row
+    Finalcol = WSD.Cells(1, Application.Columns.Count). _
+        End(xlToLeft).Column
+    Set PRange = WSD.Cells(1, 1).Resize(FINALROW, Finalcol)
+    Set PTCache = ActiveWorkbook.PivotCaches.Add(SourceType:= _
+        xlDatabase, SourceData:=PRange.Address)
+    FINALROW = WSD.Cells(Application.Rows.Count, 2).End(xlUp).Row
+    ' Create the Pivot Table from the Pivot Cache
+    Set PT = PTCache.CreatePivotTable(TableDestination:=WSD. _
+        Cells(FINALROW + 3, 2), TableName:="PivotTable1")
+    
+    ' Turn off updating while building the table
+    PT.ManualUpdate = True
+    
+    ' Set up the row fields
+    PT.AddFields RowFields:="CF", ColumnFields:="INTERVAL"
+    
+    
+    ' Calcula quantidade de reicidências (sim/não)
+    With PT.PivotFields("CF EXEC")
+        .Orientation = xlDataField
+        .Function = xlCount
+        .Position = 1
+    
+    End With
+
+    ' Mensura Responsável pela anormalidade
+    With PT.PivotFields("CF EXEC")
+        .Orientation = xlRowField
+        .Position = 2
+    End With
+   
+   ' Mensura Responsável pela anormalidade
+    With PT.PivotFields("N°REC")
+        .Orientation = xlRowField
+        .Position = 3
+    End With
+   
+   ' Mensura Responsável pela anormalidade
+    With PT.PivotFields("N° RAL")
+        .Orientation = xlRowField
+        .Position = 4
+    End With
+   
+   ' Retira o Subtotal do campo RESP_ANOR
+   PT.PivotFields("N° RAL").Subtotals(1) = False
+   PT.PivotFields("N°REC").Subtotals(1) = False
+   PT.PivotFields("NOME FANTASIA").Subtotals(1) = False
+   PT.PivotFields("CF EXEC").Subtotals(1) = False
+  ' Aplica a formatação
+  ' Autoajusta colunas, aplica negrito aos titulos e os alinha a direita
+   
+   ActiveSheet.PivotTables("PivotTable1").TableStyle2 = "PivotStyleMedium2"
+   ActiveSheet.PivotTables("PivotTable1").PivotFields("AQR").AutoSort Order:=xlDescending, Field:="Soma de N°REC"
+   
+   PT.ManualUpdate = False
+   PT.ManualUpdate = True
+    
+    Cells.Select
+    With Selection.Font
+        .Name = "Calibri"
+        .Size = 8
+    End With
+    Selection.Columns.AutoFit
+     
+  
+  Columns("F:J").Select
+    Selection.ColumnWidth = 11
+  
+  Columns("D:K").Select
+  With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+    End With
+   Columns("E:E").Select
+    Selection.ColumnWidth = 9.5
+      
+    ' PT.TableRange2 contains the results. Move these to J10
+    ' as just values and not a real pivot table.
+    PT.TableRange2.Offset(1, 0).Copy
+    WSD.Cells(FINALROW + 3, 2).PasteSpecial xlPasteValuesAndNumberFormats
+
+    
+    ' PasteFormats
+
+    ' At this point, the worksheet looks like Figure 13.10
+    ' Stop
+                
+    ' Delete the original Pivot Table & the Pivot Cache
+    'PT.TableRange2.Clear
+    'Set PTCache = Nothing
+
+FINALROW = Cells(Rows.Count, 11).End(xlUp).Row
+Totalrow = FINALROW
+
+Call CondBordaOp
+End Sub
+
+Private Sub CondBordaOp()
+
+For i = 2 To 200
+
+If Cells(i, 2).Value = "RESPONSAVEL" Then
+    Cells(i, 2).CurrentRegion.Select
+    Call borda
+Else
+
+If Cells(i, 2).Value = "CF" Then
+    Cells(i, 2).CurrentRegion.Select
+    Call borda
+
+End If
+End If
+Next i
+
+Call TabelFinal
+End Sub
+
+
+
+
+Private Sub ColorTabDinan()
+For i = 2 To 200
+
+
+If Cells(i, 11).Value = "Total geral" Then
+        valor = 10
+        Cells(i, 2).Resize(1, valor).Interior.Color = RGB(55, 96, 145)
+        Cells(i, 2).Resize(1, valor).Font.Bold = True
+        Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 10).Value = "Total geral" Then
+        valor = 9
+        Cells(i, 2).Resize(1, valor).Interior.Color = RGB(55, 96, 145)
+        Cells(i, 2).Resize(1, valor).Font.Bold = True
+        Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+If Cells(i, 9).Value = "Total geral" Then
+        valor = 8
+        Cells(i, 2).Resize(1, valor).Interior.Color = RGB(55, 96, 145)
+        Cells(i, 2).Resize(1, valor).Font.Bold = True
+        Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+
+Else
+If Cells(i, 8).Value = "Total geral" Then
+        valor = 7
+        Cells(i, 2).Resize(1, valor).Interior.Color = RGB(55, 96, 145)
+        Cells(i, 2).Resize(1, valor).Font.Bold = True
+        Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+
+Else
+If Cells(i, 7).Value = "Total geral" Then
+        valor = 6
+        Cells(i, 2).Resize(1, valor).Interior.Color = RGB(55, 96, 145)
+        Cells(i, 2).Resize(1, valor).Font.Bold = True
+        Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+
+Else
+If Cells(i, 2).Value = "Total geral" Then
+        valor = valor
+        Cells(i, 2).Resize(1, valor).Interior.Color = RGB(55, 96, 145)
+        Cells(i, 2).Resize(1, valor).Font.Bold = True
+        Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "ACRAPO; Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+    
+If Cells(i, 2).Value = "FLEMING;MCPAIVA; Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "FREDBB; Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "JONIO;MARCEL; Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "JONIO;CAMOR; Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "JONIO;MCLIMA; Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "ORLANY; Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "RBGOIS; ANAKATY; Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "RBGOIS; BETORJ; Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "RBGOIS; BETORJ; Total" Then
+    valor = valor
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+       
+If Cells(i, 2).Value = "RBGOIS;JARBASM; Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "RBGOIS;WMANOEL; Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "ACS Provedores Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "Ass. Téc. Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+If Cells(i, 2).Value = "Cabos Ópticos Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "C. Locais Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "Implantação Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "Infraestrutura Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "N. Fluminense Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "N. Fluminense Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "Rec. Vipline Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "Rede ADE Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "Sul Flum. Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+If Cells(i, 2).Value = "Telefonia Total" Then
+    Cells(i, 2).Resize(1, valor).Interior.Color = RGB(83, 142, 213)
+    Cells(i, 2).Resize(1, valor).Font.Bold = True
+    Cells(i, 2).Resize(1, valor).Font.Color = vbWhite
+Else
+
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+Next i
+
+'Call TabelFinal
+End Sub
+
+
+Private Sub TabelFinal()
+
+Columns("M:M").Select
+    Selection.ColumnWidth = 10.86
+
+Columns("N:O").Select
+    Selection.ColumnWidth = 4.5
+    
+FINALROW = Cells(Rows.Count, 1).End(xlUp).Row
+Totalrow = FINALROW
+
+ActiveSheet.Range("M1").Value = "INTERVAL"
+ActiveSheet.Range("M2").Value = ".>2d"
+ActiveSheet.Range("M3").Value = "1d-2d"
+ActiveSheet.Range("M4").Value = "8h-24hs"
+ActiveSheet.Range("M5").Value = "4h-8h"
+ActiveSheet.Range("M6").Value = "Até 4hs"
+ActiveSheet.Range("M7").Value = "TOTAL"
+
+ActiveSheet.Range("M2").Interior.Color = vbRed
+ActiveSheet.Range("M3").Interior.Color = RGB(0, 255, 0)
+ActiveSheet.Range("M4").Interior.Color = vbYellow
+ActiveSheet.Range("M5").Interior.Color = RGB(205, 198, 115)
+ActiveSheet.Range("M6").Interior.Color = RGB(207, 207, 207)
+
+ActiveSheet.Range("N1").Value = "CASOS"
+ActiveSheet.Range("O1").Value = "(%)"
+
+
+Range("N2").Resize(5, 1).FormulaLocal = "=CONT.SES($E$2:$E$" & FINALROW & ";M2)"
+Range("N7").FormulaLocal = "=SOMA(N2:N6)"
+Range("O2").Resize(6, 1).FormulaLocal = "=N2/$N$7"
+ActiveSheet.Range("O2:O11").NumberFormat = "00%"
+
+
+Range("M1").CurrentRegion.Select
+With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+    End With
+Call borda
+
+ActiveSheet.Range("M9").Value = "DESCRIÇÃO"
+ActiveSheet.Range("N9").Value = "CASOS"
+ActiveSheet.Range("O9").Value = "(%)"
+ActiveSheet.Range("M10").Value = "CC reincidente*"
+ActiveSheet.Range("M11").Value = "Ñ reincidente"
+
+ActiveSheet.Range("M10").Font.Color = vbWhite
+ActiveSheet.Range("M10").Interior.Color = vbRed
+ActiveSheet.Range("M11").Interior.Color = RGB(219, 229, 241)
+
+Range("N10").Resize(2, 1).FormulaLocal = "=CONT.SES($G$2:$G$" & FINALROW & ";M10)"
+Range("O10").Resize(2, 1).FormulaLocal = "=N10/$N$7"
+
+Range("M9").CurrentRegion.Select
+With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+    End With
+Call borda
+
+Columns("M:M").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+
+Columns("L:M").Select
+    Selection.ColumnWidth = 1.75
+
+ActiveSheet.Range("N15:O15").Select
+Selection.Merge
+ActiveSheet.Range("N15").Value = "ANÁLISE"
+ActiveSheet.Range("N16").Value = "MÁXIMO"
+ActiveSheet.Range("N17").Value = "MÍNIMO"
+ActiveSheet.Range("N18").Value = "DESVIO PADRÃO"
+ActiveSheet.Range("N19").Value = "MÉDIA"
+ActiveSheet.Range("N20").Value = "DIA"
+ActiveSheet.Range("O20").Value = "CASOS"
+
+N = 21
+For N = N To 50
+Cells(N, 13).Value = N - 20
+Next N
+
+ActiveSheet.Range("N15:O50").Select
+'Define as bordas diagonais (inferior e superior):
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+'Define a borda para parte esquerda da planilha:
+    With Selection.Borders(xlEdgeLeft)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+    End With
+'Define a borda para parte superior da planilha:
+  With Selection.Borders(xlEdgeTop)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+'Define a borda para parte inferior da planilha:
+  With Selection.Borders(xlEdgeBottom)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+End With
+'Define a borda para parte direita da planilha:
+  With Selection.Borders(xlEdgeRight)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+ 'Define a borda para parte de dentro (vertical):
+  With Selection.Borders(xlInsideVertical)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+  'Define a borda para parte de dentro (horizontal):
+  With Selection.Borders(xlInsideHorizontal)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+
+Dim mySheets, r As Range
+mySheets = Array("Automatiza")
+ 
+For i = 0 To UBound(mySheets)
+    Set r = Sheets(mySheets(i)).Range("E2:E200")
+    With r
+        .Replace What:="(vazio)", Replacement:="", LookAt:=xlWhole, _
+        SearchOrder:=xlByRows, MatchCase:=False
+    End With
+Next
+
+Call EvolucaoOPER
+End Sub
+
+
+
+Private Sub borda()
+'Define as bordas diagonais (inferior e superior):
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+'Define a borda para parte esquerda da planilha:
+    With Selection.Borders(xlEdgeLeft)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+    End With
+'Define a borda para parte superior da planilha:
+  With Selection.Borders(xlEdgeTop)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+'Define a borda para parte inferior da planilha:
+  With Selection.Borders(xlEdgeBottom)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+End With
+'Define a borda para parte direita da planilha:
+  With Selection.Borders(xlEdgeRight)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+ 'Define a borda para parte de dentro (vertical):
+  With Selection.Borders(xlInsideVertical)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+  'Define a borda para parte de dentro (horizontal):
+  With Selection.Borders(xlInsideHorizontal)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+
+Dim mySheets, r As Range
+mySheets = Array("Automatiza")
+ 
+For i = 0 To UBound(mySheets)
+    Set r = Sheets(mySheets(i)).Range("E2:E200")
+    With r
+        .Replace What:="(vazio)", Replacement:="", LookAt:=xlWhole, _
+        SearchOrder:=xlByRows, MatchCase:=False
+    End With
+Next
+
+
+End Sub
+
+Private Sub EvolucaoOPER()
+Sheets("Historico").Select
+ActiveSheet.Range("B1").Value = "CF RJO"
+ActiveSheet.Range("C1").Value = "M"
+ActiveSheet.Range("D1").Value = "Mes"
+ActiveSheet.Range("E1").Value = "Ano"
+ActiveSheet.Range("F1").Value = "Recs"
+
+Cells.Select
+    With Selection.Font
+        .Name = "Calibri"
+        .Size = 8
+    End With
+
+
+
+Cells.Select
+    Selection.RowHeight = 12.5
+    
+Columns("A:A").Select
+        Selection.ClearContents
+    
+FINALROW = Cells(Rows.Count, 2).End(xlUp).Row
+Totalrow = FINALROW
+
+FINALROW = FINALROW + 1
+Range("B" & FINALROW).FormulaLocal = "=AGORA()"
+Range("C2:C" & FINALROW).FormulaLocal = "=MÊS(B2)"
+Range("E2:E" & FINALROW).FormulaLocal = "=ANO(B2)"
+Range("F" & FINALROW).FormulaLocal = "=CONT.VALORES(Automatiza!A2:A100)"
+
+Columns("B:B").Select
+    Selection.NumberFormat = "[$-416]dd/Mm/yy;@"
+    
+Columns("C:C").Select
+    Selection.NumberFormat = "General"
+
+Columns("E:E").Select
+    Selection.NumberFormat = "General"
+
+ActiveSheet.Range("B2:F" & FINALROW).Select
+Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+    
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlBottom
+    End With
+
+'Define as bordas diagonais (inferior e superior):
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+'Define a borda para parte esquerda da planilha:
+    With Selection.Borders(xlEdgeLeft)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+    End With
+'Define a borda para parte superior da planilha:
+  With Selection.Borders(xlEdgeTop)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+'Define a borda para parte inferior da planilha:
+  With Selection.Borders(xlEdgeBottom)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+End With
+'Define a borda para parte direita da planilha:
+  With Selection.Borders(xlEdgeRight)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+ 'Define a borda para parte de dentro (vertical):
+  With Selection.Borders(xlInsideVertical)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+  'Define a borda para parte de dentro (horizontal):
+  With Selection.Borders(xlInsideHorizontal)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+Columns.EntireColumn.AutoFit
+ActiveSheet.Range("B1:C1").Font.Bold = True
+For i = 2 To FINALROW
+    If Cells(i, 3).Value = "1" Then
+    Cells(i, 4).Value = "Jan"
+Else
+    If Cells(i, 3).Value = "2" Then
+    Cells(i, 4).Value = "Fev"
+Else
+    If Cells(i, 3).Value = "3" Then
+    Cells(i, 4).Value = "Mar"
+Else
+    If Cells(i, 3).Value = "4" Then
+    Cells(i, 4).Value = "Abr"
+Else
+    If Cells(i, 3).Value = "5" Then
+    Cells(i, 4).Value = "Mai"
+Else
+    If Cells(i, 3).Value = "6" Then
+    Cells(i, 4).Value = "Jun"
+Else
+    If Cells(i, 3).Value = "7" Then
+    Cells(i, 4).Value = "Jul"
+Else
+    If Cells(i, 3).Value = "8" Then
+    Cells(i, 4).Value = "Ago"
+Else
+    If Cells(i, 3).Value = "9" Then
+    Cells(i, 4).Value = "Set"
+Else
+    If Cells(i, 3).Value = "10" Then
+    Cells(i, 4).Value = "Out"
+Else
+    If Cells(i, 3).Value = "11" Then
+    Cells(i, 4).Value = "Nov"
+Else
+    If Cells(i, 3).Value = "12" Then
+    Cells(i, 4).Value = "Dez"
+
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+Next i
+
+Call TestandoLoop
+End Sub
+
+Private Sub TestandoLoop()
+A = Cells(Rows.Count, 2).End(xlUp).Row
+B = A - 30
+For i = B To A
+Cells(i, 1).Value = i - (A - 30)
+Next i
+Call CondicionalHistorico
+End Sub
+
+Private Sub CondicionalHistorico()
+Dim A As Date, B As Date
+FINALROW = Cells(Rows.Count, 2).End(xlUp).Row
+
+'A variável "TempoMinuto" recebe o valor da coluna Q
+A = ActiveSheet.Range("B" & FINALROW).Value
+B = ActiveSheet.Range("B" & FINALROW - 1).Value
+
+C = (A - B) * 1440
+
+
+'Verifica se o servidor está atualizado (considera 30 minutos de delay)
+'se é maior igual a 30 minutos
+    If (C >= 0 And C <= 700) Then
+        MsgBox "Valor já foi incluído, confira e feche a planilha"
+        Rows(FINALROW).Delete Shift:=xlUp
+        Columns("A:A").Select
+        Selection.ClearContents
+        
+        Range("B" & FINALROW).Select
+    
+    Else
+        Call ExclCollNaosegue
+        
+End If
+
+End Sub
+Private Sub ExclCollNaosegue()
+
+Dim x, y As Range, z As Integer
+x = Array(7, 8, 9, 10, 11)
+Set y = Columns(x(0))
+For z = 1 To UBound(x)
+Set y = Union(y, Columns(x(z)))
+Next z
+y.Delete Shift:=xlToLeft
+Call TDinanOP
+End Sub
+
+Private Sub TDinanOP()
+
+
+    ' Page 292-293
+    ' Use a Pivot Table to create a static summary report
+    ' with model going down the rows and regions across
+    Dim WSD As Worksheet
+    Dim PTCache As PivotCache
+    Dim PT As PivotTable
+    Dim PRange As Range
+    Dim FINALROW As Long
+    Set WSD = ActiveSheet
+        
+    ' Delete any prior pivot tables
+    For Each PT In WSD.PivotTables
+        PT.TableRange2.Clear
+    Next PT
+    'WSD.Range("J1:Z1").EntireColumn.Clear
+        
+    ' Define input area and set up a Pivot Cache
+    FINALROW = WSD.Cells(Application.Rows.Count, 2).End(xlUp).Row
+    Finalcol = WSD.Cells(1, Application.Columns.Count). _
+        End(xlToLeft).Column
+    Set PRange = WSD.Cells(1, 2).Resize(FINALROW, Finalcol - 1)
+    Set PTCache = ActiveWorkbook.PivotCaches.Add(SourceType:= _
+        xlDatabase, SourceData:=PRange.Address)
+    
+    ' Create the Pivot Table from the Pivot Cache
+    Set PT = PTCache.CreatePivotTable(TableDestination:=WSD. _
+        Cells(1, Finalcol + 2), TableName:="PivotTable1")
+    
+    ' Turn off updating while building the table
+    PT.ManualUpdate = True
+    
+    ' Set up the row fields
+    PT.AddFields RowFields:="MES", ColumnFields:="ANO"
+    
+    
+    ' Calcula quantidade de reicidências (sim/não)
+    With PT.PivotFields("Recs")
+        .Orientation = xlDataField
+        .Function = xlAverage
+        .Position = 1
+        .NumberFormat = "0"
+    
+    End With
+
+   
+  ' Aplica a formatação
+  ' Autoajusta colunas, aplica negrito aos titulos e os alinha a direita
+   
+   ActiveSheet.PivotTables("PivotTable1").TableStyle2 = "PivotStyleMedium2"
+   
+   PT.ManualUpdate = False
+   PT.ManualUpdate = True
+    
+    Cells.Select
+    With Selection.Font
+        .Name = "Calibri"
+        .Size = 8
+    End With
+  
+  Columns("H:H").Select
+    Selection.ColumnWidth = 5
+    
+  Columns("I:J").Select
+  Selection.ColumnWidth = 4
+  With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+    End With
+    
+  Columns("K:K").Select
+    Selection.ColumnWidth = 5
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+    End With
+   
+   
+    ' PT.TableRange2 contains the results. Move these to J10
+    ' as just values and not a real pivot table.
+    PT.TableRange2.Offset(1, 0).Copy
+    WSD.Cells(1, Finalcol + 2).PasteSpecial xlPasteValuesAndNumberFormats
+    
+
+Range("G2").CurrentRegion.Select
+       Selection.Replace What:="Total geral", Replacement:="Média", LookAt:=xlPart, _
+       SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+       ReplaceFormat:=False
+       
+
+FINALROW = Cells(Rows.Count, 2).End(xlUp).Row
+       
+'-------------------------------------------------------------------------------------
+Sheets("Automatiza").Select
+Range("N21").Resize(30, 1).FormulaLocal = "=PROCV(M21;Historico!A1:F" & FINALROW & ";2;FALSO)"
+Range("N21:N50").Select
+    Selection.NumberFormat = "[$-416]dd/Mm/yy;@"
+Range("O21").Resize(30, 1).FormulaLocal = "=PROCV(M21;Historico!A1:F" & FINALROW & ";6;FALSO)"
+
+
+Range("N21:O50").Select
+With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+    End With
+
+' MÁXIMO
+Range("O16").FormulaLocal = "=MÁXIMO(O21:O50)"
+' MÍNIMO
+Range("O17").FormulaLocal = "=MÍNIMO(O21:O50)"
+' DESVIO PADRÃO
+Range("O18").FormulaLocal = "=DESVPAD(O21:O50)"
+' MÉDIA
+Range("O19").FormulaLocal = "=MÉDIA(O21:O50)"
+
+Range("O16:O19").Select
+With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+    End With
+Selection.NumberFormat = "0"
+
+'-------------------------------------------------------------------------------------
+Call CondCollor
+End Sub
+
+Private Sub CondCollor()
+
+ActiveSheet.Range("N15:O50").Select
+Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+
+
+Dim Max As Integer, Min As Integer
+
+Max = ActiveSheet.Range("O16").Value
+Min = ActiveSheet.Range("O17").Value
+
+For i = 21 To 50
+        If Cells(i, 15).Value = Max Then
+        Cells(i, 14).Resize(1, 2).Interior.Color = vbRed
+        Cells(i, 14).Resize(1, 2).Font.Color = vbWhite
+Else
+        If Cells(i, 15).Value = Min Then
+           Cells(i, 14).Resize(1, 2).Interior.Color = RGB(141, 180, 227)
+End If
+End If
+
+Next i
+Rows("1:6").Select
+Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+    With Selection.Font
+        .Name = "Calibri"
+        .Size = 11
+    End With
+
+Range("A1:K1").Select
+Selection.Merge
+Range("A2:K2").Select
+Selection.Merge
+Range("A3:K3").Select
+Selection.Merge
+Range("A4:K4").Select
+Selection.Merge
+Range("A5:K5").Select
+Selection.Merge
+
+
+ActiveSheet.Range("A2").Value = "Bom dia equipe,"
+ActiveSheet.Range("A3").Value = "Segue a lista das principais REC's aberta do nosso backlog crítico,"
+ActiveSheet.Range("A4").Value = "*A LISTA ESTÁ ORDENADA PELA CRITICIDADE DAS REC's NO INTERVALO, RESPONSÁVEL, CF, E A EVOLUÇÃO DA QUANTIDADE EM 30 DIAS, CONSIDERANDO"
+ActiveSheet.Range("A5").Value = "O MAIOR VALOR, O MENOR, DESVIO PADRÃO E MÉDIA MÓVEL."
+Range("A4:A5").Select
+    With Selection
+        .Font.Bold = True
+    End With
+
+Range("A1:A5").Select
+    With Selection
+        .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlCenter
+    End With
+
+Range("A1:K1").Interior.Color = RGB(216, 216, 216)
+'Call msgEMAIL
+End Sub
+
+Private Sub msgEMAIL()
+' Don't forget to copy the function RangetoHTML in the module.
+' Working in Office 2000-2010
+    Dim rng As Range
+    Dim OutApp As Object
+    Dim OutMail As Object
+    With Application
+        .EnableEvents = False
+        .ScreenUpdating = False
+    End With
+ 
+    Set rng = Nothing
+    Set rng = ActiveSheet.UsedRange
+    'You can also use a sheet name
+    'Set rng = Sheets("YourSheet").UsedRange
+
+    Set OutApp = CreateObject("Outlook.Application")
+    Set OutMail = OutApp.CreateItem(0)
+ 
+    On Error Resume Next
+    With OutMail
+        .To = "oxavier@embratel.com.br"
+        .CC = ""
+' ------------- nova estrutura -------------------
+  '      .To = "rbgois@embratel.com.br; wmanoel@embratel.com.br; fleming@embratel.com.br; jonio@embratel.com.br; mcpaiva@embratel.com.br; anakaty@embratel.com.br; betorj@embratel.com.br; jarbasm@embratel.com.br; acrapo@embratel.com.br; orlany@embratel.com.br; fredbb@embratel.com.br; camor@embratel.com.br"
+  '     .CC = "lfernan@embratel.com.br; favieri@embratel.com.br; simeao@embratel.com.br; jlemos@embratel.com.br; srodart@embratel.com.br; vfirmin@embratel.com.br; militao@embratel.com.br; oxavier@embratel.com.br"
+' ------------- nova estrutura -------------------
+        .BCC = ""
+        .Subject = ActiveSheet.Name & " <<RECs ABERTAS EM BACKLOG-Grandes Clientes-RJO>> " & Date
+        .HTMLBody = RangetoHTML(rng)
+        .send   'or use .Display
+        
+    End With
+    On Error GoTo 0
+ 
+    With Application
+        .EnableEvents = True
+        .ScreenUpdating = True
+    End With
+ 
+    Set OutMail = Nothing
+    Set OutApp = Nothing
+
+
+'Call FecharPlan
+End Sub
+Function RangetoHTML(rng As Range)
+' Changed by Ron de Bruin 28-Oct-2006
+' Working in Office 2000-2010
+    Dim fso As Object
+    Dim ts As Object
+    Dim TempFile As String
+    Dim TempWB As Workbook
+ 
+    TempFile = Environ$("temp") & "/" & Format(Now, "dd-mm-yy h-mm-ss") & ".htm"
+ 
+    'Copy the range and create a new workbook to past the data in
+    rng.Copy
+    Set TempWB = Workbooks.Add(1)
+    With TempWB.Sheets(1)
+        .Cells(1).PasteSpecial Paste:=8
+        .Cells(1).PasteSpecial xlPasteValues, , False, False
+        .Cells(1).PasteSpecial xlPasteFormats, , False, False
+        .Cells(1).Select
+        Application.CutCopyMode = False
+
+        
+        
+        On Error Resume Next
+        .DrawingObjects.Visible = True
+        .DrawingObjects.Delete
+        On Error GoTo 0
+    End With
+ 
+    'Publish the sheet to a htm file
+    With TempWB.PublishObjects.Add( _
+         SourceType:=xlSourceRange, _
+         Filename:=TempFile, _
+         Sheet:=TempWB.Sheets(1).Name, _
+         Source:=TempWB.Sheets(1).UsedRange.Address, _
+         HtmlType:=xlHtmlStatic)
+        .Publish (True)
+    End With
+ 
+    'Read all data from the htm file into RangetoHTML
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    Set ts = fso.GetFile(TempFile).OpenAsTextStream(1, -2)
+    RangetoHTML = ts.ReadAll
+    ts.Close
+    RangetoHTML = Replace(RangetoHTML, "align=center x:publishsource=", _
+                          "align=left x:publishsource=")
+ 
+    'Close TempWB
+    TempWB.Close savechanges:=False
+ 
+    'Delete the htm file we used in this function
+    Kill TempFile
+ 
+    Set ts = Nothing
+    Set fso = Nothing
+    Set TempWB = Nothing
+
+  
+End Function
+
+Private Sub FecharPlan()
+Sheets("Automatiza").Select
+Application.DisplayAlerts = False
+ActiveWorkbook.Close savechanges:=True
+Application.Quit
+End Sub
