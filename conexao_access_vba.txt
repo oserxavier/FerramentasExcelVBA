@@ -1,0 +1,254 @@
+Attribute VB_Name = "Módulo1"
+Sub Imhotep()
+
+Sheets.Add after:=Sheets(Sheets.Count)
+ActiveWindow.DisplayGridlines = False
+ActiveSheet.Name = "Base cliente"
+
+Dim cadas As Integer
+Dim noval As Integer
+Dim i As Integer
+Dim j As Integer
+
+For i = 1 To Sheets.Count - 2
+noval = Sheets("Base cliente").Range("A65536").End(xlUp).Offset(1, 0).Row - 1
+Sheets(i).Select
+cadas = Range("A65536").End(xlUp).Offset(1, 0).Row - 2
+
+For j = 6 To cadas
+noval = noval + 1
+Sheets("Base cliente").Range("A" & noval).Value = Range("A" & j).Value
+Sheets("Base cliente").Range("B" & noval).Value = Range("B" & j).Value
+Sheets("Base cliente").Range("C" & noval).Value = Range("C" & j).Value
+Sheets("Base cliente").Range("D" & noval).Value = Range("D" & j).Value
+Sheets("Base cliente").Range("E" & noval).Value = Range("E" & j).Value
+Sheets("Base cliente").Range("F" & noval).Value = Range("F" & j).Value
+Sheets("Base cliente").Range("G" & noval).Value = Range("G" & j).Value
+Sheets("Base cliente").Range("H" & noval).Value = Range("H" & j).Value
+'Sheets("Base cliente").Range("I" & noval).Value = Range("I" & j).Value
+
+Next j
+
+Next i
+Sheets(i).Select
+
+Call RemoveWhiteSpace
+End Sub
+
+Private Sub RemoveWhiteSpace()
+Sheets("Base cliente").Select
+FINALROW = Cells(Rows.Count, 1).End(xlUp).Row
+
+Cells(1, 1).Resize(FINALROW, 1).Select
+Dim Rng As Range
+For Each Rng In Selection.Cells
+Rng = Trim(Rng)
+Next
+
+'TrimString = Trim(MyString)
+Call DeparaDV
+End Sub
+
+Private Sub DeparaDV()
+Dim Depara As String
+
+FINALROW = Cells(Rows.Count, 1).End(xlUp).Row
+
+For i = 1 To FINALROW
+Depara = ActiveSheet.Range("A" & i).Value
+
+If Depara = "MARCIO DUNCAN RIBEIRO JORGE" Then
+       ActiveSheet.Range("A" & i).Value = "MARCIO DUNCAN"
+Else
+If Depara = "RENATO ABREU DE SOUZA" Then
+       ActiveSheet.Range("A" & i).Value = "RENATO ABREU"
+Else
+If Depara = "MARCELO LEITE DE MORAES" Then
+       ActiveSheet.Range("A" & i).Value = "MARCELO LEITE"
+Else
+If Depara = "MICHELE DARIANO MACHEMER" Then
+       ActiveSheet.Range("A" & i).Value = "MICHELE DARIANO"
+Else
+
+If Depara = "AMANDA VANESSA ANDREONE" Then
+       ActiveSheet.Range("A" & i).Value = "AMANDA ANDREONE"
+Else
+If Depara = "MARINA SAYURI KAWASAKI" Then
+       ActiveSheet.Range("A" & i).Value = "MARINA KAWASAKI"
+Else
+If Depara = "ROGERIO FAGUNDES COSTA" Then
+       ActiveSheet.Range("A" & i).Value = "ROGERIO FAGUNDES"
+
+Else
+If Depara = "MAGDA BOMFIM DE ARAGAO" Then
+       ActiveSheet.Range("A" & i).Value = "MAGDA ARAGAO"
+       Else
+If Depara = "Total geral" Then
+       ActiveSheet.Range("A" & i).Value = "EBT EMPRESAS"
+Else
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+End If
+
+Next i
+
+Call Formatar
+End Sub
+
+Private Sub Formatar()
+
+Sheets("Base cliente").Select
+Cells.Select
+    With Selection.Font
+        .Name = "Calibri"
+        .Size = 10
+    End With
+'Apaga linhas vazias
+Columns("B:B").Select
+Selection.SpecialCells(xlCellTypeBlanks).Select
+Selection.EntireRow.Delete
+
+' Formata valores
+FINALROW = Cells(Rows.Count, 1).End(xlUp).Row
+ Cells(1, 4).Resize(FINALROW, 1).Select
+    Selection.NumberFormat = "##,##0.00"
+    
+ Cells(1, 6).Resize(FINALROW, 2).Select
+    Selection.NumberFormat = "##,##0.00"
+    
+    
+Columns("C:C").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+
+Cells(1, 3).Resize(FINALROW, 1).FormulaLocal = "=TEXTO(B1;""00000000000"")"
+
+Range("C1:C" & FINALROW).Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+
+    Columns("B:B").Select
+    Selection.Delete Shift:=xlToLeft
+
+Columns("A:A").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+
+
+i = 1
+For i = 1 To FINALROW
+Cells(i, 1).Value = Cells(i, 2).Value & Cells(i, 3).Value
+Next i
+
+Call testandoColunas
+End Sub
+
+Private Sub testandoColunas()
+
+    Rows("1:1").Select
+    Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+Set vPlan = Worksheets("Base cliente")
+Columns("A:D").EntireColumn.AutoFit
+'Set vPlan = Saber1
+
+With vPlan.Range("A1:J1")
+ .Value = Array("CHAVE", "DV - RESPONSÁVEL", "Conta", "Razão Social", "Valor dos Contratos a serem reajustados (R$)", "Qtde Contratos", "Delta de Reajuste (R$)", "Total Contratos Reajustados (R$)", "Faturamento médio mensal YTD (R$)", "% Delta/Faturamento YTD", "% Delta/Faturamento YTD", "% Delta/Faturamento YTD")
+ .Font.Size = 10
+ .WrapText = True
+ .Font.Bold = True
+ .Interior.Color = RGB(31, 73, 125)
+ .Font.Color = vbWhite
+ .HorizontalAlignment = xlCenter
+ .VerticalAlignment = xlCenter
+' .ColumnWidth = 39 'largura das colunas
+ .RowHeight = 37 ''altura das linhas
+End With
+
+With vPlan.Range("E1:J1")
+ .ColumnWidth = 15
+End With
+
+Range("a1").CurrentRegion.Select
+'Define as bordas diagonais (inferior e superior):
+   Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+   Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+'Define a borda para parte esquerda da planilha:
+   With Selection.Borders(xlEdgeLeft)
+     .LineStyle = xlContinuous
+     .Weight = xlThin
+     .ColorIndex = xlAutomatic
+   End With
+'Define a borda para parte superior da planilha:
+ With Selection.Borders(xlEdgeTop)
+     .LineStyle = xlContinuous
+     .Weight = xlThin
+     .ColorIndex = xlAutomatic
+ End With
+'Define a borda para parte inferior da planilha:
+ With Selection.Borders(xlEdgeBottom)
+     .LineStyle = xlContinuous
+     .Weight = xlThin
+     .ColorIndex = xlAutomatic
+End With
+'Define a borda para parte direita da planilha:
+ With Selection.Borders(xlEdgeRight)
+     .LineStyle = xlContinuous
+     .Weight = xlThin
+     .ColorIndex = xlAutomatic
+ End With
+'Define a borda para parte de dentro (vertical):
+ With Selection.Borders(xlInsideVertical)
+     .LineStyle = xlContinuous
+     .Weight = xlThin
+     .ColorIndex = xlAutomatic
+ End With
+ 'Define a borda para parte de dentro (horizontal):
+ With Selection.Borders(xlInsideHorizontal)
+     .LineStyle = xlDash
+     .Weight = xlThin
+     .ColorIndex = xlAutomatic
+ End With
+
+End Sub
+
+Sub AcessaBaseReceita_media()
+Dim sSQL As String
+Dim rs As ADODB.Recordset
+Dim cn As ADODB.Connection
+Dim Caminho As String
+
+Data = Cells(1, 1).Value
+
+On Error GoTo trataErro
+
+Set cn = New ADODB.Connection
+cn.Open "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=\\wvrjo055910\sites\bd\receita_ultimo.mdb;Persist Security Info=False"
+
+sSQL = "SELECT DV & CONTA as Chave, DV, CONTA, SUM(TOTAL_02)/(SELECT LIMITE FROM CONFIG_01) AS MEDIA_02  FROM ___SABRINA_RECEITA_01 GROUP BY DV, CONTA"
+'sSQL2 = "UNION ALL Select DE, ANO, FAMILIA, SUM(JAN), SUM(FEV), SUM(MAR), SUM(ABR), SUM(MAI), SUM(JUN),SUM(JUL), SUM(AGO), SUM(SET), SUM(OUT), SUM(NOV), SUM(DEZ), SUM(TOTAL) from OSEMAR_BASE_ANO GROUP BY DE, ANO, FAMILIA ORDER BY ANO "
+'sSQL3 = "UNION ALL Select DIRETORIA0, ANO, FAMILIA, SUM(JAN), SUM(FEV), SUM(MAR), SUM(ABR), SUM(MAI), SUM(JUN),SUM(JUL), SUM(AGO), SUM(SET), SUM(OUT), SUM(NOV), SUM(DEZ), SUM(TOTAL) from OSEMAR_BASE_ANO GROUP BY DIRETORIA0, ANO, FAMILIA ORDER BY ANO"
+
+'sSQL = sSQL1 & sSQL2 & sSQL3
+Set rs = New ADODB.Recordset
+rs.Open sSQL, cn
+ActiveWorkbook.Sheets("Base receita").Cells(3, 1).CopyFromRecordset rs
+rs.Close
+Set rs = Nothing
+cn.Close
+'Call Formata_reajuste
+Exit Sub
+
+trataErro:
+  MsgBox ("Erro : " & Err.Description)
+  
+
+End Sub
+
+
