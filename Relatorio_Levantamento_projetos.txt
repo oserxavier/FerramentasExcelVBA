@@ -1,0 +1,431 @@
+Sub ConectBD_Clarity()
+Application.DisplayAlerts = False
+  Application.Calculation = xlCalculationManual
+  Application.ScreenUpdating = False
+
+    'Declare variables'
+        Set objMyConn = New ADODB.Connection
+        Set objMyCmd = New ADODB.Command
+        Set objMyRecordset = New ADODB.Recordset
+
+    'Open Connection'
+        objMyConn.ConnectionString = "Provider=SQLOLEDB.1;Integrated Security=SSPI;Persist Security Info=True;Initial Catalog=BITI;Data Source=sqlpw01db02,1441;Use Procedure for Prepare=1;Auto Translate=True;Packet Size=4096;Workstation ID=OINOTE0093828;Use Encryption for Data=False;Tag with column collation when possible=False"
+        objMyConn.Open
+
+    'Set and Excecute SQL Command'
+        Set objMyCmd.ActiveConnection = objMyConn
+        Sql = "select TB_FT_SUBPROJETO.[GESTOR_DO_GESTOR_SISTEMA_PRINCIPAL]," ' B1 - Gestor N3
+        Sql = Sql & "TB_FT_SUBPROJETO.[GESTOR_DIRETO_SISTEMA_PRINCIPAL]," ' C1 - Gestor N4
+        Sql = Sql & "TB_FT_SUBPROJETO.[ID_SUBPROJETO]," ' D1 - Id subprojeto
+        Sql = Sql & "TB_FT_SUBPROJETO.[TITULO_SUBPROJETO]," 'E1 - Titulo do subprojeto
+        Sql = Sql & "TB_FT_SUBPROJETO.[ESTADO]," ' F1 - Estado Subprojeto
+        Sql = Sql & "TB_FT_FRENTE_TRABALHO.[LIDERANCA_TECNICA]," 'G1 - Liderança técnica
+        Sql = Sql & "TB_FT_FRENTE_TRABALHO.[SISTEMA]," 'H1 - Sistema Frente de trabalho
+        Sql = Sql & "TB_FT_FRENTE_TRABALHO.[TIPO_ENVOLVIMENTO]," 'I1 - Tipo de envolvimento
+        Sql = Sql & "TB_FT_PROPOSTA.[ESTADO]," ' ESTADO DA PROPOSTA
+        Sql = Sql & "TB_FT_PROPOSTA.[CUSTO_PROPOSTA]," 'CUSTO DA PROPOSTA
+        Sql = Sql & "TB_FT_MACROESTIMATIVA.[MACROESTIMATIVA_TOTAL]," ' ME_TOTAL
+        Sql = Sql & "TB_FT_SUBPROJETO.[TIPIFICACAO]," ' O1 - Tipificação
+        Sql = Sql & "TB_FT_SUBPROJETO.[PRIORIDADE_GLOBAL]," ' PRIORIDADE GLOBAL
+        Sql = Sql & "TB_FT_SUBPROJETO.[PRIORIDADE_UN]," ' PRIORIDADE
+        Sql = Sql & "TB_FT_SUBPROJETO.[DATA_REFERENCIA]," ' DATA REFERENCIA
+        Sql = Sql & "TB_FT_PROPOSTA.[ID_PROPOSTA],"
+        Sql = Sql & "TB_FT_FRENTE_TRABALHO.[ID_FRENTE_TRABALHO]"
+
+        
+        Sql = Sql & "from [TB_FT_SUBPROJETO]"
+' ---------------------------------------------------------------------------------------------------------------------
+     
+     ' Left join TB_FRENTE_TRABALHO e TB_FT_SUBPROJETO
+        Sql = Sql & " LEFT JOIN [TB_FT_FRENTE_TRABALHO] ON TB_FT_FRENTE_TRABALHO.[ID_SUBPROJETO] = TB_FT_SUBPROJETO.[ID_SUBPROJETO] and TB_FT_FRENTE_TRABALHO.[ESTADO] NOT IN ('cancelada', 'cancelada sem desenho','participação recusada', 'requisito recusado')"
+     ' Left Join TB_FT_MACROESTIMATIVA e TB_FT_FRENTE_TRABALHO
+        Sql = Sql & " LEFT JOIN [TB_FT_MACROESTIMATIVA] ON TB_FT_MACROESTIMATIVA.[ID_FRENTE_TRABALHO] = TB_FT_FRENTE_TRABALHO.[ID_FRENTE_TRABALHO] AND TB_FT_MACROESTIMATIVA.[ESTADO] NOT IN ('cancelada', 'participação recusada') and TB_FT_MACROESTIMATIVA.[ATUAL] NOT IN ('Não') AND TB_FT_MACROESTIMATIVA.[ID_MACROESTIMATIVA] NOT IN ('MACRO00002737')"
+     ' Left Join TB_FT_PROPOSTA e TB_FT_FRENTE_TRABALHO
+     
+'      --PROP.[ESTADO] NOT IN ('proposta cancelada')
+
+        Sql = Sql & " LEFT JOIN [TB_FT_PROPOSTA] ON TB_FT_PROPOSTA.[ID_FRENTE_TRABALHO] = TB_FT_FRENTE_TRABALHO.[ID_FRENTE_TRABALHO] and TB_FT_PROPOSTA.[ESTADO] NOT IN ('proposta cancelada')"
+     
+'------------------------------------------------------------------------------------------------------------------------
+     ' Restrição "PRJ"
+       Sql = Sql & " WHERE TB_FT_SUBPROJETO.ID_SUBPROJETO LIKE 'PRJ%'"
+     ' Restrições
+       Sql = Sql & "AND TB_FT_SUBPROJETO.[ESTADO] NOT IN ('aguardando validação da macro estimativa', 'aguardando validação de requisitos', 'em macro estimativa', 'concluído', 'cancelado', 'em detalhamento de requisitos', 'em aprovação na carteira', 'subprojeto em criação', 'em avaliação de arquitetura', 'em pós implantação', 'encerrado')"
+'       Sql = Sql & " AND TB_FT_FRENTE_TRABALHO.[ESTADO] NOT IN ('cancelada', 'cancelada sem desenho','participação recusada', 'requisito recusado')"
+       Sql = Sql & " AND TB_FT_SUBPROJETO"
+       Sql = Sql & ".ID_SUBPROJETO NOT IN ('PRJ00000708', 'PRJ00000795','PRJ00001158','PRJ00001161','PRJ00001618',"
+       Sql = Sql & "'PRJ00001652','PRJ00001678','PRJ00001714','PRJ00001997','PRJ00005247','PRJ00005919',"
+       Sql = Sql & "'PRJ00006382','PRJ00007155','PRJ00007156','PRJ00007403','PRJ00007986','PRJ00008036',"
+       Sql = Sql & "'PRJ00008877','PRJ00009416','PRJ00009570','PRJ00010114','PRJ00010190','PRJ00010557',"
+       Sql = Sql & "'PRJ00010687','PRJ00010728','PRJ00011064','PRJ00011545','PRJ00011786','PRJ00012549',"
+       Sql = Sql & "'PRJ00012858','PRJ00001926','PRJ00009450','PRJ00009451','PRJ00009452','PRJ00009453',"
+       Sql = Sql & "'PRJ00011799','PRJ00010074','PRJ00001645','PRJ00004569','PRJ00004711','PRJ00004968',"
+       Sql = Sql & "'PRJ00005586','PRJ00006291','PRJ00006379','PRJ00006380','PRJ00006381','PRJ00006430',"
+       Sql = Sql & "'PRJ00006502','PRJ00007341','PRJ00007480','PRJ00007645','PRJ00008278','PRJ00009523',"
+       Sql = Sql & "'PRJ00010020','PRJ00010046','PRJ00010546','PRJ00010750','PRJ00010854','PRJ00011204',"
+       Sql = Sql & "'PRJ00012257','PRJ00012462','PRJ00012563','PRJ00012875','PRJ00012893','PRJ00012963',"
+       Sql = Sql & "'PRJ00013388','PRJ00010915','PRJ00012475','PRJ00009503')"
+                
+        objMyCmd.CommandText = Sql 'Sql1 & Sql2
+        objMyCmd.CommandType = adCmdText
+        objMyCmd.Execute
+
+    'Open Recordset'
+        Set objMyRecordset.ActiveConnection = objMyConn
+        objMyRecordset.Open objMyCmd
+
+    'Copy Data to Excel'
+        Sheets("Base_Geral").Range("A4").CopyFromRecordset (objMyRecordset)
+
+Application.DisplayAlerts = True
+  Application.Calculation = xlCalculationAutomatic
+Call FormatTabela_BD
+End Sub
+    
+Private Sub FormatTabela_BD()
+
+Application.DisplayAlerts = False
+  Application.Calculation = xlCalculationManual
+    Columns("M:M").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Columns("L:T").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Columns("A:A").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+'    Columns("K:Z").Select
+'    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+'    Columns("A:A").Select
+'    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+
+Cells(3, 1).Value = "CHAVE"
+Cells(3, 2).Value = "GESTOR_N3"
+Cells(3, 3).Value = "GESTOR_N4"
+Cells(3, 4).Value = "ID_SUBPROJETO"
+Cells(3, 5).Value = "TITULO_SUBPROJETO"
+Cells(3, 6).Value = "ESTADO_SUBPROJETO"
+Cells(3, 7).Value = "LIDERANCA_TECNICA"
+Cells(3, 8).Value = "SISTEMA_FRENTE_TRABALHO"
+Cells(3, 9).Value = "TIPO_DE_ENVOLVIMENTO"
+Cells(3, 10).Value = "ESTADO_PROPOSTA"
+Cells(3, 11).Value = "CUSTO DA PROPOSTA"
+Cells(3, 12).Value = "ME_TOTAL"
+Cells(3, 13).Value = "1 - Eu tenho realmente que fazer ou terminar este projeto?"
+Cells(3, 14).Value = "2) Por que?"
+Cells(3, 15).Value = "3) O que vai acontecer para a Oi se eu não fizer? Quais riscos vamos incorrer?"
+Cells(3, 16).Value = "Custo afundado"
+Cells(3, 17).Value = "4) Quanto já gastei, ou seja, se eu resolver parar o projeto hoje, quanto tenho que pagar de “custo afundado”?"
+Cells(3, 18).Value = "5) Em qual fase está?"
+Cells(3, 19).Value = "Custo previsto"
+Cells(3, 20).Value = "6) Quanto ainda tenho que gastar para terminar o projeto?"
+Cells(3, 21).Value = "7) Qual é a prioridade para corte (pensando com a cabeça de negócio e não com a cabeça de quem já gastou x ou y)? Alta (primeiros a serem cancelados/suspensos); Média; Baixa ou Não Cortar."
+Cells(3, 22).Value = "TIPIFICAÇÃO"
+Cells(3, 23).Value = "Classificação por prioridade"
+Cells(3, 24).Value = "8) Prioridade Global"
+Cells(3, 25).Value = "9) Prioridade UN"
+Cells(3, 26).Value = "DataRef"
+
+
+'Cells(3, 10).Value = "1 - Eu tenho realmente que fazer ou terminar este projeto?"
+'Cells(3, 11).Value = "2) Por que?"
+'Cells(3, 12).Value = "3) O que vai acontecer para a Oi se eu não fizer? Quais riscos vamos incorrer?"
+'Cells(3, 13).Value = "Custo afundado"
+'Cells(3, 14).Value = "4) Quanto já gastei, ou seja, se eu resolver para o projeto hoje, quanto tenho que pagar de “custo afundado”?"
+'Cells(3, 15).Value = "5) Em qual fase está?"
+'Cells(3, 16).Value = "Custo previsto"
+'Cells(3, 17).Value = "6) Quanto ainda tenho que gastar para terminar o projeto?"
+'Cells(3, 18).Value = "7) Qual é a prioridade para corte (pensando com a cabeça de negócio e não com a cabeça de quem já gastou x ou y)? Alta (primeiros a serem cancelados/suspensos); Média; Baixa ou Não Cortar."
+'Cells(3, 19).Value = "TIPIFICAÇÃO"
+'Cells(3, 20).Value = "Classificação por prioridade"
+'Cells(3, 21).Value = "8) Prioridade Global"
+'Cells(3, 22).Value = "9) Prioridade UN"
+'Cells(3, 23).Value = "DataRef"
+
+Columns(1).ColumnWidth = 26
+Columns(2).ColumnWidth = 30
+Columns(3).ColumnWidth = 30
+Columns(4).ColumnWidth = 11
+Columns(5).ColumnWidth = 60
+Columns(6).ColumnWidth = 37
+Columns(7).ColumnWidth = 8
+Columns(8).ColumnWidth = 40
+Columns(9).ColumnWidth = 19
+Columns(10).ColumnWidth = 43
+Columns(11).ColumnWidth = 15
+Columns(12).ColumnWidth = 15
+Columns(13).ColumnWidth = 32
+Columns(14).ColumnWidth = 32
+Columns(15).ColumnWidth = 32
+Columns(16).ColumnWidth = 15
+Columns(17).ColumnWidth = 15
+Columns(18).ColumnWidth = 16
+Columns(19).ColumnWidth = 15
+Columns(20).ColumnWidth = 15
+Columns(21).ColumnWidth = 30
+Columns(22).ColumnWidth = 10
+Columns(23).ColumnWidth = 10
+Columns(24).ColumnWidth = 27
+Columns(25).ColumnWidth = 10
+Columns(26).ColumnWidth = 10
+
+' Formata tabela
+Cells.Select
+    Selection.RowHeight = 12.5
+    
+'Altera para fonte Calibri tamanho 8
+    With Selection.Font
+        .Name = "Calibri"
+        .Size = 8
+    End With
+ActiveSheet.Range("A3:Z3").Font.Bold = True
+
+Columns("A:Z").Select
+  With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = True
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+Rows("3:3").RowHeight = 75
+
+
+Range("A3").CurrentRegion.Select
+'ActiveSheet.Range("N15:O50").Select
+'Define as bordas diagonais (inferior e superior):
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+'Define a borda para parte esquerda da planilha:
+    With Selection.Borders(xlEdgeLeft)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+    End With
+'Define a borda para parte superior da planilha:
+  With Selection.Borders(xlEdgeTop)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+'Define a borda para parte inferior da planilha:
+  With Selection.Borders(xlEdgeBottom)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+End With
+'Define a borda para parte direita da planilha:
+  With Selection.Borders(xlEdgeRight)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+ 'Define a borda para parte de dentro (vertical):
+  With Selection.Borders(xlInsideVertical)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+  'Define a borda para parte de dentro (horizontal):
+  With Selection.Borders(xlInsideHorizontal)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+UltLin_tab = Sheets("Base_Geral").Cells(Rows.Count, 4).End(xlUp).Offset(1, 0).Row
+' CALCULA CUSTO AFUNDADO
+Cells(4, 16).Resize(UltLin_tab - 4, 1).FormulaLocal = "=SE(J4=""PROPOSTA COM GO"";K4;SE(J4<>""PROPOSTA COM GO"";K4*16%;))"
+
+' CALCULA CUSTO PREVISTO
+Cells(4, 19).Resize(UltLin_tab - 4, 1).FormulaLocal = "=SE(J4=""PROPOSTA COM GO"";0;SE(E(J4=""AGUARDANDO INFORMAÇÕES DOS FORNECEDORES"";K4<>0);K4*84%;SE(J4=""AGUARDANDO  INFORMAÇÕES DOS FORNECEDORES"";L4;SE(J4<>"""";K4*84%;SE(J4="""";L4;"""")))))"
+
+' Calcula "5) Em que fase está?"
+Cells(4, 18).Resize(UltLin_tab - 4, 1).FormulaLocal = "=SE(F4=""Aguardando Validação da Macro Estimativa"";""Fora da DDS com consumo""; SE(F4=""Aguardando Validação de Requisitos"";""Fora da DDS com consumo""; SE(F4=""Subprojeto em Criação"";""Fora da DDS com consumo""; SE(F4=""Em Macro Estimativa"";""Fora da DDS com consumo""; SE(F4=""Suspenso"";""Suspenso""; SE(F4=""Em Execução"";""DESENV""; SE(F4=""Em Planejamento"";""DESENV""; SE(F4=""Em Consolidação e Aprovação do Planejamento"";""DESENV""; SE(F4=""Em Consolidação e Aprovação do Desenho da Solução"";""VSOL/DSOL""; SE(F4=""Em Visão da Solução"";""VSOL/DSOL""; SE(F4=""Em Planejamento Preliminar"";""VSOL/DSOL""; SE(F4=""Em Desenho da Solução"";""VSOL/DSOL""; SE(F4=""Aguardando Aprovação Financeira"";""Aprovação Financeira""; """"))))))))))))) "
+
+' Calcula "CLASSIFICAÇÃO POR PRIORIDADE"
+Cells(4, 23).Resize(UltLin_tab - 4, 1).FormulaLocal = "=SE(NÃO(ÉERROS(PROCURAR(""ARS"";D4)));""ARS de Serviço""; SE(NÃO(ÉERROS(PROCURAR(""PKE"";E4)));""PKE""; SE(B4=""SANDRO VANDERLEI MILEK"";""Estruturantes""; SE(NÃO(ÉERROS(PROCURAR(""Redução de MIPs"";E4)));""Redução de MIPs""; SE(V4=""Comitê"";""Comitê""; SE(V4=""Automática"";""Automática""; ""Não se Aplica""))))))"
+
+Application.DisplayAlerts = True
+  Application.Calculation = xlCalculationAutomatic
+
+Call Format_celulas
+End Sub
+
+Private Sub Format_celulas()
+
+Application.DisplayAlerts = False
+  Application.Calculation = xlCalculationManual
+
+UltLin_tab = Sheets("Base_Geral").Cells(Rows.Count, 4).End(xlUp).Offset(1, 0).Row
+
+Cells(4, 1).Resize(UltLin_tab, 1).FormulaLocal = "=D4&H4&AA4&AB4"
+Cells(4, 1).Resize(UltLin_tab, 1).Select
+Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+
+
+Cells(3, 1).Interior.Color = vbRed
+
+Cells(3, 2).Resize(1, 8).Interior.Color = vbBlack
+Cells(3, 2).Resize(1, 16).Font.Color = vbWhite
+
+Cells(3, 10).Resize(1, 8).Interior.Color = vbRed
+
+Cells(3, 18).Interior.Color = vbYellow
+
+Cells(3, 19).Interior.Color = vbBlack
+Cells(3, 19).Resize(1, 5).Font.Color = vbWhite
+
+Cells(3, 20).Resize(1, 2).Interior.Color = vbRed
+
+Cells(3, 22).Resize(1, 2).Interior.Color = vbBlack
+Cells(3, 22).Resize(1, 2).Font.Color = vbWhite
+
+Cells(3, 24).Resize(1, 2).Interior.Color = vbYellow
+
+Cells(3, 26).Interior.Color = vbBlack
+Cells(3, 26).Font.Color = vbWhite
+
+Dim lastRow As Long
+
+For Each Cell In Range("A4:Z" & UltLin_tab - 1) ''change range accordingly
+    If Cell.Row Mod 2 = 1 Then ''highlights row 2,4,6 etc|= 0 highlights 1,3,5
+        Cell.Interior.Color = RGB(221, 235, 247) ''color to preference
+    Else
+        Cell.Interior.ColorIndex = xlNone ''color to preference or remove
+    End If
+Next Cell
+
+
+'Formata as celulas de custo (colunas K-L) CUSTO DA PROPOSTA/ ME_TOTAL
+Cells(2, 11).Resize(1, 2).Select
+Selection.NumberFormat = "$ #,##0,00"
+' Formata as celulas Custo afundado (P)
+Cells(2, 16).Resize(1, 2).Select
+Selection.NumberFormat = "$ #,##0,00"
+' Formata as celulas Custo afundado (P)
+Cells(2, 19).Resize(1, 2).Select
+Selection.NumberFormat = "$ #,##0,00"
+
+
+
+
+Cells(4, 11).Resize(UltLin_tab - 4, 2).Select
+Selection.NumberFormat = "##,##"
+'Formata as celulas de custo (colunas S-W)
+Cells(4, 16).Resize(UltLin_tab - 4, 2).Select
+Selection.NumberFormat = "##,##"
+
+'Formata as celulas de custo (colunas S-W)
+Cells(4, 19).Resize(UltLin_tab - 4, 2).Select
+Selection.NumberFormat = "##,##"
+
+
+
+'Calcula o total das colunas K-L
+Cells(2, 11).Resize(1, 2).FormulaLocal = "=SOMA(K4:K" & UltLin_tab - 1 & ")"
+
+'Calcula o total das colunas P-Q
+Cells(2, 16).Resize(1, 2).FormulaLocal = "=SOMA(P4:P" & UltLin_tab - 1 & ")"
+
+'Calcula o total das colunas S-T
+Cells(2, 19).Resize(1, 2).FormulaLocal = "=SOMA(S4:S" & UltLin_tab - 1 & ")"
+
+' Oculta a primeira coluna (chave)
+Columns("A:A").Select
+Selection.EntireColumn.Hidden = True
+
+' Deleta as ultimas 2 colunas
+Columns("AA:AB").Select
+    Selection.Delete Shift:=xlToLeft
+
+Cells(2, 51).Value = "Sim"
+Cells(3, 51).Value = "Não"
+
+Cells(4, 13).Resize(UltLin_tab - 4, 1).Select
+    With Selection.Validation
+        .Delete
+        .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:= _
+        xlBetween, Formula1:="=AY$1:$AY$3"
+    End With
+
+Cells(2, 52).Value = "Alta"
+Cells(3, 52).Value = "Média"
+Cells(4, 52).Value = "Baixa"
+Cells(5, 52).Value = "Não cortar"
+
+
+Cells(4, 21).Resize(UltLin_tab - 4, 1).Select
+    With Selection.Validation
+        .Delete
+        .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:= _
+        xlBetween, Formula1:="=AZ$1:$AZ$5"
+    End With
+' Oculta as colunas AY:Az
+Columns("AY:AZ").Select
+Selection.EntireColumn.Hidden = True
+
+
+Cells(3, 1).Select
+Application.DisplayAlerts = True
+  Application.Calculation = xlCalculationAutomatic
+  Application.ScreenUpdating = True
+
+'Insere coluna M para calcular ME manual
+Columns("M:M").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+
+Cells(3, 13).Value = "ME"
+'Calcula ME, buscando valores da aba ME_MANUAL
+Cells(2, 13).Resize(1, 2).FormulaLocal = "=SOMA(M4:M" & UltLin_tab - 1 & ")"
+Cells(4, 13).Resize(UltLin_tab - 4, 2).Select
+Selection.NumberFormat = "##,##"
+
+Cells(4, 13).Resize(UltLin_tab - 4, 1).FormulaLocal = "=SEERRO(PROCV(A4;ME_MANUAL!$A$2:$B$4759;2;FALSO);"""")"
+
+
+Range("K2:M2, Q2:R2, T2:U2").Font.Bold = True
+Range("K2:M2, Q2:R2, T2:U2").Select
+'ActiveSheet.Range("N15:O50").Select
+'Define as bordas diagonais (inferior e superior):
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+'Define a borda para parte esquerda da planilha:
+    With Selection.Borders(xlEdgeLeft)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+    End With
+'Define a borda para parte superior da planilha:
+  With Selection.Borders(xlEdgeTop)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+'Define a borda para parte inferior da planilha:
+  With Selection.Borders(xlEdgeBottom)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+End With
+'Define a borda para parte direita da planilha:
+  With Selection.Borders(xlEdgeRight)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+ 'Define a borda para parte de dentro (vertical):
+  With Selection.Borders(xlInsideVertical)
+      .LineStyle = xlContinuous
+      .Weight = xlThin
+      .ColorIndex = xlAutomatic
+  End With
+
+
+End Sub
+
+
