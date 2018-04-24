@@ -1,0 +1,155 @@
+‘Abaixo seguem diversos códigos bem elaborados que possibilitarão copiar os gráficos das suas ‘planilhas pré-existentes, bem como os ranges de dados destas (conjuntos de células ‘previamente selecionados) como uma imagem.  
+ ‘Objetivo: 
+‘ Por vezes desejará não enviar a fonte de dados junto com o gráfico para um Slide que lhe solicitaram. 
+ ‘ Talvez deseje enviar uma tabela, um relatório, partes de um Balanced Scorecard, um ‘Dashboard, um Scorecard, ou mesmo um conjunto de KPIs, sem que estes sejam alterados por ‘quem recebê-los. 
+ ‘ Criar um informativo regular, parte de um relatório, que envia via MS Outlook, comentários ‘dos relatórios, agregando conteúdo analítico e não apenas gráficos e dados estáticos para o ‘público alvo. 
+‘Com os recursos abaixo alistados, poderá enviar somente as imagens, como se tirasse uma ‘foto e colasse no Slide, num documento MS Word, num e-mail e até mesmo no Photoshop. 
+
+ActiveChart.CopyPicture Appearance:=xlScreen, Size:=xlScreen, Format:=xlPicture 
+ ‘Para copiar um gráfico selecionado (ou ativo) em uma planilha, implemente a seguinte sintaxe: 
+
+ActiveChart.CopyPicture Appearance:=xlScreen, Format:=xlPicture 
+ ‘Copiando um range de dados, colando-a como uma imagem::  
+
+Selection.CopyPicture Appearance:=xlScreen, Format:=xlPicture 
+‘ Copie gráficos selecionados (ou ativo) em uma planilha, implemente a seguinte sintaxe: 
+
+Worksheets("Nome da pasta").ChartObjects(1).Chart.CopyPicture 
+Appearance:=xlScreen, Size:=xlScreen, Format:=xlPicture 
+
+‘ Copie uma faixa de dados específica, embora não esteja selecionada, colando-a a posteriori:: 
+ Worksheets("Nome da pasta").Range("B11:AF25").CopyPicture Appearance:=xlScreen, 
+Format:=xlPicture 
+'----------------------------------------------------------------
+Excel VBA - Copie objetos como imagem - 02 
+Sub GraficoToPowerPoint() 
+    Dim objPPT As Object 
+    Dim objPrs As Object 
+    Dim shtTemp As Worksheet 
+    Dim chtTemp As ChartObject 
+    Dim intSlide As Integer 
+      
+    Set objPPT = CreateObject("Powerpoint.application") 
+    objPPT.Visible = True 
+    objPPT.presentations.Open ThisWorkbook.Path & "\Dashboard_Bernardes.ppt" 
+    objPPT.ActiveWindow.ViewType = 1 'ppViewSlide 
+      
+    For Each shtTemp In ThisWorkbook.Worksheets 
+        For Each chtTemp In shtTemp.ChartObjects 
+            intSlide = intSlide + 1 
+            chtTemp.CopyPicture 
+            If intSlide > objPPT.presentations(1).Slides.Count Then 
+                objPPT.ActiveWindow.View.GotoSlide 
+Index:=objPPT.presentations(1).Slides.Add(Index:=intSlide, 
+Layout:=1).SlideIndex 
+            End If 
+            objPPT.ActiveWindow.View.Paste 
+        Next 
+    Next 
+    objPPT.presentations(1).Save 
+    objPPT.Quit 
+      
+    Set objPrs = Nothing 
+    Set objPPT = Nothing 
+End Sub 
+'----------------------------------------------------------------
+'Copiando range e gráfico para o MS Powerpoint: 
+ 
+Sub GraficoRange_TO_Powerpoint()  
+    Dim objPPT As Object  
+    Dim objPrs As Object  
+    Dim objSld As Object  
+    Dim shtTemp As Object  
+    Dim chtTemp As ChartObject  
+    Dim objShape As Shape  
+    Dim objGShape As Shape  
+    Dim intSlide As Integer  
+    Dim blnCopy As Boolean  
+      
+    Set objPPT = CreateObject("Powerpoint.application")  
+    objPPT.Visible = True  
+    objPPT.Presentations.Add  
+    objPPT.ActiveWindow.ViewType = 1 
+      
+    For Each shtTemp In ThisWorkbook.Sheets  
+        blnCopy = False  
+        If shtTemp.Type = xlWorksheet Then  
+            For Each objShape In shtTemp.Shapes 
+                blnCopy = False  
+                If objShape.Type = msoGroup Then  
+ 
+                    For Each objGShape In objShape.GroupItems  
+                        If objGShape.Type = msoChart Then  
+                            blnCopy = True  
+                            Exit For  
+                        End If  
+                    Next  
+                End If  
+                If objShape.Type = msoChart Then blnCopy = True  
+                  
+                If blnCopy Then  
+                    intSlide = intSlide + 1  
+                    objShape.CopyPicture  
+ 
+                    objPPT.ActiveWindow.View.GotoSlide 
+Index:=objPPT.ActivePresentation.Slides.Add(Index:=objPPT.ActivePresentation
+.Slides.Count + 1, Layout:=12).SlideIndex  
+                    objPPT.ActiveWindow.View.Paste  
+                End If  
+            Next  
+            If Not blnCopy Then  
+ 
+                intSlide = intSlide + 1  
+                shtTemp.UsedRange.CopyPicture  
+
+ 
+                objPPT.ActiveWindow.View.GotoSlide 
+Index:=objPPT.ActivePresentation.Slides.Add(Index:=objPPT.ActivePresentation
+.Slides.Count + 1, Layout:=12).SlideIndex  
+                objPPT.ActiveWindow.View.Paste  
+            End If  
+        Else  
+            intSlide = intSlide + 1  
+            shtTemp.CopyPicture  
+ 
+            objPPT.ActiveWindow.View.GotoSlide 
+Index:=objPPT.ActivePresentation.Slides.Add(Index:=objPPT.ActivePresentation
+.Slides.Count + 1, Layout:=12).SlideIndex  
+            objPPT.ActiveWindow.View.Paste  
+        End If  
+    Next  
+      
+    Set objPrs = Nothing  
+    Set objPPT = Nothing  
+End Sub 
+ 
+Bônus: 
+'---------------------------------------------------------------- 
+Sub RangeUsado_TO_Powerpoint() 
+    Dim objPPT As Object 
+    Dim shtTemp As Object 
+    Dim intSlide As Integer 
+      
+    Set objPPT = CreateObject("Powerpoint.application") 
+    objPPT.Visible = True 
+    objPPT.Presentations.Open ThisWorkbook.Path & "\Bernardes.ppt" 
+    objPPT.ActiveWindow.ViewType = 1 
+     
+    For Each shtTemp In ThisWorkbook.Sheets 
+        shtTemp.Range("A1", shtTemp.UsedRange).CopyPicture xlScreen, 
+xlPicture 
+        intSlide = intSlide + 1 
+ 
+        objPPT.ActiveWindow.View.GotoSlide 
+Index:=objPPT.ActivePresentation.Slides.Add(Index:=objPPT.ActivePresentation
+.Slides.Count + 1, Layout:=12).SlideIndex 
+        objPPT.ActiveWindow.View.Paste 
+        With 
+objPPT.ActiveWindow.View.Slide.Shapes(objPPT.ActiveWindow.View.Slide.Shapes.
+Count) 
+            .Left = (.Parent.Parent.SlideMaster.Width - .Width) / 2 
+        End With 
+    Next 
+      
+    Set objPPT = Nothing 
+End Sub
