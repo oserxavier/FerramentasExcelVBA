@@ -1,0 +1,4 @@
+Sub testando()
+Sheets(Array("Meta", "Receita", "Desconto", "Reajuste", "ContrGC", "ContrVencer", "Oportunidades", "backlog")).Copy
+
+End Sub
