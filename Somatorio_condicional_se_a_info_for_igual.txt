@@ -1,0 +1,28 @@
+Sub AgruparItens()
+Dim iUltimaLinha As Long
+Dim iPenultimaLinha As Long
+Dim i As Long
+Dim sItens
+
+With Plan1
+'Identifica a última linha que contêm dados
+iUltimaLinha = Cells(Rows.Count, 1).End(xlUp).Row
+iPenultimaLinha = iUltimaLinha - 1
+
+'Classifica a lista
+.Range(.Cells(1, 1), .Cells(iUltimaLinha, 2)).Sort Key1:=.Range("A1"), Order1:=xlAscending, Header:=xlGuess, _
+OrderCustom:=1, MatchCase:=False, Orientation:=xlTopToBottom, DataOption1:=xlSortNormal
+
+sItemAnterior = .Cells(iUltimaLinha, 1)
+For i = iPenultimaLinha To 2 Step -1
+If .Cells(i, 1) = sItemAnterior Then
+.Cells(i, 2) = .Cells(i + 1, 2) + .Cells(i, 2)
+.Cells(i + 1, 2).EntireRow.Delete
+End If
+sItemAnterior = .Cells(i, 1)
+Next i
+End With
+
+MsgBox "Concluído", vbInformation
+
+End Sub
