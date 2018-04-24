@@ -1,0 +1,18 @@
+Sub ImportarDadosSemAbrir()  
+Dim Caminho As String, Arquivo As String  
+
+' Aqui vai entrar o caminho do arquivo que não vai abrir, apenas extrair os dados
+Caminho = "C:\Pijaku\Não_faz_nada_de_seus_dias\CCM\"  
+Arquivo= "source.xls"  
+
+' Alterar os nomes das abas "Folh1 e Folh2" de acordo com os nomes das abas
+
+ThisWorkbook.Names.Add "espaço", _  
+            RefersTo:="='" & Caminho & "[" & Arquivo & "]Folh1'!$A$1:$F$10"  
+    With Sheets("Folh2")  
+        .[A1:F10] = "=espaço"  
+        .[A1:F10].Copy  
+        Sheets("Folh1").Range("A1").PasteSpecial xlPasteValues  
+        .[A1:F10].Clear  
+    End With  
+End Sub
