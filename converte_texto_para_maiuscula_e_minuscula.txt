@@ -1,0 +1,27 @@
+Macros para alterar todo o texto em um intervalo para letras maiúsculas
+Sub Uppercase()
+   ' Especifique o intervalo a ser alterado
+   For Each x In Range("A1:A5")
+      ' Altera o texto para maiúscula
+      x.Value = UCase(x.value)
+   Next
+End Sub
+
+'----------------------------------------------------------------------------
+Macros para alterar todo o texto em um intervalo para letras minúsculas
+Sub Lowercase()
+   ' Especifique o intervalo a ser alterado
+   For Each x In Range("B1:B5")
+      ' Altera o texto para minuscula	
+      x.Value = LCase(x.Value)
+   Next
+End Sub
+'-----------------------------------------------------------------------------
+Macros para alterar todo o texto em um intervalo de célula para primeira letra da sentença em maiúscula
+Sub Proper_Case()
+   ' Especifique o intervalo a ser alterado
+   For Each x In Range("C1:C5")
+      ' Altera a primeira letra do texto para maiúscula
+      x.Value = Application.Proper(x.Value)
+   Next
+End Sub
