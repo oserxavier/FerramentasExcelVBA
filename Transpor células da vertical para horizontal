@@ -1,0 +1,33 @@
+Sub TransposeData()
+     'No meu caso tenho dados na forma vertical na Sheet1
+        'A
+    'Mensal
+    '247
+    '1
+    'Diario
+    '55
+    '2
+     'E preciso transformar esses dados na forma horizontal ou seja, em:
+    ' A       B       C
+    ' Mensal  247     1
+    ' Diario  55      2
+   
+    'Aqui defino o numero de colunas que pretendo, conforme acima são 3 colunas
+    Const NUM As Long = 3
+    Dim rngCopy As Range, rngPaste As Range
+    ' Leitura das minhas linhas em vertical na Sheet1
+    Set rngCopy = Worksheets("Sheet1").Range("A1").Resize(NUM, 1)
+    ' Escrita e transposição na minha Sheet2
+    Set rngPaste = Worksheets("Sheet2").Range("A1")
+
+    Do While Application.CountA(rngCopy) > 0
+
+        rngCopy.Copy
+        rngPaste.PasteSpecial Paste:=xlPasteAll, Transpose:=True
+
+        Set rngCopy = rngCopy.Offset(NUM, 0)
+        Set rngPaste = rngPaste.Offset(1, 0)
+
+    Loop
+
+End Sub
